@@ -11,9 +11,9 @@ bq_con <- dbConnect(
   billing = "subugoe-collaborative"
 )
 
-apc_de <- read_csv(here("data", "apc_de_20260824.csv"))
-apc_ta <- read_csv(here("data", "transformative_agreements_20260824.csv"))
-institution_matching <- read_csv(here("data", "apc_institutions_20260824.csv"))
+apc_de <- read_csv(here("APC_link_analysis/data", "apc_de_20260824.csv"))
+apc_ta <- read_csv(here("APC_link_analysis/data", "transformative_agreements_20260824.csv"))
+institution_matching <- read_csv(here("APC_link_analysis/data", "apc_institutions_20260824.csv"))
 
 apc_ta <- apc_ta |>
   select(-group_id)
@@ -34,7 +34,7 @@ apc_df <- apc_de |>
   filter(country == "DEU") |>
   select(-c(pmid, pmcid, ut, institution, institution_cubes_name))
 
-write_csv(apc_df, here("data", "apc_df.csv"))
+write_csv(apc_df, here("APC_link_analysis/data", "apc_df.csv"))
 
 
 doi_lookup <- apc_df |>
@@ -77,4 +77,4 @@ WHERE w.publication_year BETWEEN 2021 AND 2025
 
 res <- dbGetQuery(bq_con, sql)
 
-write_csv(res, here("data", "res.csv"))
+write_csv(res, here("APC_link_analysis/data", "res.csv"))
