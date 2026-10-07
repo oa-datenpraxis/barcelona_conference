@@ -1,0 +1,493 @@
+---
+title: "Examining the Link Between APC-Paying Institutions and Author Position"
+format:
+  typst:
+    mainfont: "Atkinson Hyperlegible"
+    papersize: a0
+    fontsize: 25pt
+    margin:
+      x: 3cm
+      y: 3cm
+    page-numbering: false
+    bibliography: refs.bib
+    include-in-header:
+      text: |
+        #let navy   = rgb("#051740")
+        #let blue   = rgb("#2052a4")
+        #let accent = rgb("#4086e0")
+        #let pale   = rgb("#ccd9e9")
+        #let ink    = rgb("#000000")
+        #let logo-img(path, w: 90pt, h: auto) = box(
+          width: w, height: h, image(path, width: 100%),
+        )
+        #let logo-with-text(logo, body, ratio: (5, 20)) = grid(
+          columns: (ratio.at(0) * 1fr, ratio.at(1) * 1fr),
+          align: horizon, column-gutter: 14pt,
+          logo, body,
+        )
+        #let orcid-green = rgb("#A6CE39")
+        #let orcid-icon(size: 11pt) = box(
+          width: size, height: size, radius: 100%, fill: orcid-green,
+        )[
+          #align(center + horizon)[
+            #text(fill: white, size: size * 0.62, weight: "bold")[iD]
+          ]
+        ]
+        #let orcid(id, size: 11pt, color: white) = link("https://orcid.org/" + id)[
+        #grid(
+        columns: (size, auto), column-gutter: 5pt, align: horizon,
+        orcid-icon(size: size),
+        text(size: size, fill: color)[#id],
+        )
+        ]
+        #let poster-footer(institution-logo: none, conference: none, cc-logo: none) = block(
+          width: 100%, fill: pale, inset: (x: 20pt, y: 12pt), radius: 4pt,
+        )[
+          #grid(
+            columns: (100pt, 1fr, 90pt), column-gutter: 16pt, align: horizon,
+            if institution-logo != none { institution-logo } else { [] },
+            align(center)[#conference],
+            if cc-logo != none { align(right)[#cc-logo] } else { [] },
+          )
+        ]
+        #show heading.where(level: 1): it => block(above: 40pt, below: 30pt)[
+          #text(size: 30pt, weight: "bold", fill: blue)[#it.body]
+        ]
+        #show strong: it => text(fill: blue, weight: "bold", it.body)
+        #show "Examining the Link Between APC-Paying Institutions and Author Position": set text(fill: blue)
+citeproc: false
+csl: apa
+suppress-bibliography: true
+---
+
+```{r}
+#| message: false
+#| echo: false
+library(tidyverse)
+library(here)
+library(scales)
+library(ggVennDiagram)
+options(scipen = 999) 
+```
+
+```{r}
+#| message: false
+#| echo: false
+
+article_level <- read_csv(here("APC_link_analysis/data", "article_level.csv"))
+rel_shares    <- read_csv(here("APC_link_analysis/data", "rel_shares.csv"))
+reason        <- read_csv(here("APC_link_analysis/data", "reason.csv"))
+```
+
+```{=typst}
+#align(center)[
+  #grid(
+    columns: (auto, auto),
+    column-gutter: 250pt,
+    align: top,
+
+    grid(
+      rows: (auto, auto, auto, auto), row-gutter: 14pt,
+      align(center)[Sophia Dörner],
+      align(center)[#orcid("0000-0001-8747-3422", size: 25pt, color: black)],
+      align(center)[Göttingen State and University Library],
+      align(center)[sophia.doerner\@sub.uni-goettingen.de],
+    ),
+
+    grid(
+      rows: (auto, auto, auto, auto), row-gutter: 14pt,
+      align(center)[Najko Jahn],
+      align(center)[#orcid("0000-0001-5105-1463", size: 25pt, color: black)],
+      align(center)[Göttingen State and University Library],
+      align(center)[najko.jahn\@sub.uni-goettingen.de],
+    ),
+  )
+]
+```
+
+```{=typst}
+#v(14pt)
+#let col-content = [
+```
+
+# Project
+
+```{=typst}
+#grid(
+  columns: (5fr, 20fr),
+  align: horizon,
+  column-gutter: 12pt,
+  image("images/logo_oa_datenpraxis.png", width: 100%),
+  [The Project „Data Practice for Shaping the Open Access Transformation --
+  Analysis, Recommendation, Training & Networking (OA Datenpraxis)"
+  supports structural development for the Open Access transformation at
+  research institutions in Germany.]
+)
+```
+
+**Funding** Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) -- 528466070
+
+**Project Duration** 2024--2026
+
+**Project Partners**
+
+- Helmholtz Open Science Office
+- Berlin School of Library and Information Science, Humboldt-Universität zu Berlin
+- Göttingen State and University Library
+
+
+# Background
+
+For paid open access, the dominant model is that article processing charges (APCs) are invoiced to the institution of the corresponding author. However, corresponding-author data has often been unavailable as open research information. Some studies therefore used first author affiliation data as a proxy. This poster tests the policy assumption against real payment data. To this end, we focus on the following questions:
+
+- How complete is the coverage of OpenAlex corresponding-author data?
+- How well does ROR-based matching work?
+- At which author-position is the paying institution recorded as affiliation?
+- Are first author affiliations a good proxy for identifying the paying institution?
+
+
+# Data
+
+The analysis uses and combines the following data:
+
+- article-level data from the OpenAPC dataset version v5.11.5-5-1
+- author-level data from the OpenAlex Walden snapshot 2026-06-26 accessed via the SUB Göttingen Open Scholarly Data warehouse on Google BigQuery
+- institutional identifiers from the Research Organization Registry (ROR) data set version v2.11
+
+From OpenAPC we took payment data for journal article and transformative agreement APC payments restricted to German institutions and the publication period 2021--2025. OpenAlex data were matched via DOI and ROR data via ROR IDs. After excluding articles without DOI and/or ROR IDs for the paying institution the dataset comprised `r n_distinct(article_level$doi_norm) |> format(big.mark = ",")` distinct articles with `r n_distinct(article_level$payer_ror, na.rm = TRUE)` distinct paying institutions.
+
+# How complete is the coverage of OpenAlex corresponding-author data?
+
+Corresponding-author data in OpenAlex is the basis for testing the policy assumption that APCs are invoiced to that author's institution. We computed the share of corresponding-author data for the entire dataset and broken down by publication year.
+
+:::: {layout-ncol="2"}
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 6
+#| fig-align: center
+
+
+article_level |> 
+  count(has_corr) |>
+  mutate(share = n / sum(n)) |> 
+  ggplot(aes(x = has_corr, y = n, fill = has_corr)) +
+  geom_col() +
+  geom_text(aes(label = percent(share, accuracy = 1)),
+            vjust = -0.3, size = 5.5) +
+  scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
+  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"), guide = "none") +
+  theme_minimal(base_size = 16) +
+  labs(x = "has corresponding author", y = "number of articles")
+```
+
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 6
+#| fig-align: center
+
+article_level |>
+  count(period, has_corr) |>
+  group_by(period) |>
+  mutate(share = n / sum(n)) |>
+  ungroup() |>
+  ggplot(aes(x = factor(period), y = n, fill = has_corr)) +
+  geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
+  geom_text(aes(label = percent(share, accuracy = 1)),
+            position = position_dodge2(preserve = "single", width = 0.9),
+            vjust = -0.3, size = 4.6) +
+  scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
+  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"),
+                     labels = c("TRUE" = "TRUE", "FALSE" = "FALSE")) +
+  theme_minimal(base_size = 16) +
+  labs(x = "publication year", y = "number of articles", fill = "has \ncorresponding")
+```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 1: Share of corresponding-author data
+  ]
+]
+```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 2: Share of corresponding-author data per publication year
+  ]
+]
+```
+
+::::
+
+Coverage is high in general and also proves stable across 2021–2024, but drops in 2025. This might be due to a lag
+in OpenAPC data submission and enrichment rather than a change in coverage in OpenAlex.
+
+# How well does ROR-based matching work?
+
+Matching the paying institution's ROR ID to author affiliations works well overall and ROR relationships meaningfully extend what exact ID matching alone would find.
+
+```{r}
+#| echo: false
+#| output: false
+
+shares <- article_level |>
+  summarise(
+    n_articles  = n(),
+    exact       = sum(exact_any),
+    rel         = sum(payer_any & !exact_any),
+    none        = sum(!payer_any),
+    exact_share = mean(exact_any),
+    rel_share   = mean(payer_any & !exact_any),
+    none_share  = mean(!payer_any)
+  )
+
+```
+
+```{=typst}
+#let value_box(value, n, label, color: rgb("#051740")) = {
+  box(
+    width: 100%,
+    stroke: none,
+    align(center)[
+      #text(size: 32pt, weight: "bold", fill: color)[#value]
+      #v(1pt)
+      #text(size: 22pt, fill: rgb("#4086e0"))[n = #n]
+      #v(4pt)
+      #text(size: 22pt, fill: rgb("#444444"))[#label]
+    ]
+  )
+}
+
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  gutter: 1em,
+  value_box("`r scales::percent(shares$exact_share, accuracy = 1)`", "`r format(shares$exact, big.mark = ",")`", "exact ROR match"),
+  value_box("`r scales::percent(shares$rel_share, accuracy = 1)`", "`r format(shares$rel, big.mark = ",")`", "only via ROR relationships"),
+  value_box("`r scales::percent(shares$none_share, accuracy = 1)`", "`r format(shares$none, big.mark = ",")`", "no match"),
+  )
+```
+
+Breaking down the 7% matched only via relationships by relationship type shows that most affiliations are matched via the related relationship, followed by the child relationship. 
+
+```{=typst}
+#grid(
+  columns: (1fr, 1fr, 1fr, 1fr),
+  gutter: 1em,
+  value_box("`r scales::percent(rel_shares$share_of_articles[1], accuracy = 0.01)`", "`r format(rel_shares$n_articles[1], big.mark = ",")`", "child"),
+    value_box("`r scales::percent(rel_shares$share_of_articles[2], accuracy = 0.01)`", "`r format(rel_shares$n_articles[2], big.mark = ",")`", "parent"),
+      value_box("`r scales::percent(rel_shares$share_of_articles[3], accuracy = 0.01)`", "`r format(rel_shares$n_articles[3], big.mark = ",")`", "predecessor"),
+  value_box("`r scales::percent(rel_shares$share_of_articles[4], accuracy = 0.01)`", "`r format(rel_shares$n_articles[4], big.mark = ",")`", "related"),      
+  )
+```
+
+*Note that relationships might differ for separate affiliations of co-authors leading to an article potentially having multiple relationship matches.*
+
+```{=typst}
+#colbreak()
+```
+
+
+Breaking down the 6% unmatched articles by reason shows that most unmatched cases stem from affiliations either genuinely having no connection to the paying institution or from gaps in recording multi-level institutional relationships in ROR.
+
+
+```{=typst}
+#grid(
+  columns: (1fr, 1fr, 1fr),
+  gutter: 1em,
+  value_box("`r scales::percent(reason$share_of_no_match[1], accuracy = 0.01)`", "`r format(reason$n[1], big.mark = ",")`", "ROR exists, but no direct \n relationship found"),
+    value_box("`r scales::percent(reason$share_of_no_match[2], accuracy = 0.01)`", "`r format(reason$n[2], big.mark = ",")`", "no author affiliation has a ROR ID"),
+      value_box("`r scales::percent(reason$share_of_no_match[3], accuracy = 0.01)`", "`r format(reason$n[3], big.mark = ",")`", "payer ROR record has no \n relationships recorded"),
+  )
+```
+
+
+# At which author-position is the paying institution recorded as affiliation?
+
+Categorizing the paying institutions by author-position combinations shows they are most often affiliated with the first, last, *and*
+corresponding author simultaneously.
+
+```{r}
+#| echo: false
+#| fig-width: 15
+#| fig-height: 9
+#| fig-align: center
+
+article_level |> 
+  count(has_corr, position_category) |> 
+  group_by(has_corr) |> 
+  mutate(share = n / sum(n)) |> 
+  ungroup() |> 
+  ggplot(aes(x = share, y = fct_reorder(position_category, share, .fun = max), fill = has_corr)) +
+  geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
+  geom_text(aes(label = percent(share, accuracy = 1)),
+            position = position_dodge2(preserve = "single", width = 0.9),
+            hjust = -0.1, size = 5.5) +
+  scale_x_continuous(labels = label_percent(), expand = expansion(mult = c(0, 0.15))) +
+  scale_fill_manual(values = c(
+    "TRUE"    = "#051740",
+    "FALSE" = "#4086e0"
+  )) +
+  theme_minimal(base_size = 20) +
+  labs(x = "share of articles", y = NULL, fill = "has corresponding")
+```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 3: Share of articles per author-position category, with and without corresponding-author data
+  ]
+]
+```
+
+
+Without corresponding-author data, first-author affiliation identifies the paying institution for the large majority of articles. For articles with corresponding-author data, corresponding author affiliations show the highest recall for identifying the paying institution.
+
+```{r}
+#| echo: false
+#| output: false
+
+
+payer <- article_level |> 
+  group_by(has_corr) |> 
+  summarise(
+    n_articles      = n(),
+    payer_at_first  = mean(payer_first),
+    payer_at_last   = mean(payer_last),
+    payer_at_middle = mean(payer_middle),
+    payer_at_corr   = mean(payer_corr),
+    no_match        = mean(!payer_any)
+  )
+```
+
+
+```{=typst}
+#let value_box(value, n, label, color: rgb("#051740")) = {
+  box(
+    width: 100%,
+    stroke: none,
+    align(center)[
+      #text(size: 32pt, weight: "bold", fill: color)[#value]
+      #v(1pt)
+      #text(size: 32pt, weight: "bold", fill: rgb("#4086e0"))[#n]
+      #v(4pt)
+      #text(size: 22pt, fill: rgb("#444444"))[#label]
+    ]
+  )
+}
+
+#grid(
+  columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
+  gutter: 1em,
+  value_box("`r payer$has_corr[2]`", "`r payer$has_corr[1]`", "has corres- \n ponding"),
+  value_box("`r format(payer$n_articles[2],  big.mark = ",")`", "`r format(payer$n_articles[1], big.mark = ",")`", "number of \n articles"),
+    value_box("`r scales::percent(payer$payer_at_first[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_first[1], accuracy = 1)`", "first"),
+      value_box("`r scales::percent(payer$payer_at_last[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_last[1], accuracy = 1)`", "last"),
+      value_box("`r scales::percent(payer$payer_at_middle[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_middle[1], accuracy = 1)`", "middle"),
+      value_box("`r scales::percent(payer$payer_at_corr[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_corr[1], accuracy = 1)`", "corresponding"),
+      value_box("`r scales::percent(payer$no_match[2], accuracy = 1)`", "`r scales::percent(payer$no_match[1], accuracy = 1)`", "no match"),
+  )
+```
+
+# Are first author affiliations a good proxy for identifying the paying institution?
+
+Across all articles, first- and corresponding-author affiliations identify largely the same set of articles. 
+
+```{r}
+#| echo: false
+#| output: false
+
+venn_list <- list(
+  "Corresponding" = article_level |> 
+    filter(position_category %in% c(
+      "first + last + corresponding", "first + corresponding",
+      "last + corresponding", "middle + corresponding"
+    )) |> 
+    pull(doi_norm),
+  "First" = article_level |> 
+    filter(position_category %in% c(
+      "first + last + corresponding", "first + corresponding",
+      "first + last", "first only"
+    )) |> 
+    pull(doi_norm)
+)
+```
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 14
+#| fig-height: 8
+#| fig-align: center
+
+ggVennDiagram(venn_list, label = "both", set_size = 6, label_size = 6) +
+  scale_fill_gradient(low = "#cbd8e8", high = "#051740") +
+  theme(legend.position = "none") +
+  coord_flip() +
+  theme(aspect.ratio = 0.75)
+```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 4: Overlap between articles matched via first and corresponding author
+  ]
+]
+```
+
+
+First-author affiliation seams to be a reasonably reliable proxy for identifying the paying institution, particularly for articles where no corresponding-author data is available. Using it as a fallback or an additional filter captures articles that corresponding-author data alone would miss. 
+
+```{=typst}
+#v(50pt)
+```
+
+
+The notebook containing the full analysis code and intermediate checks behind this poster is openly available on GitHub and can be accessed via
+the QR code below.
+
+```{=typst}
+#v(50pt)
+
+#align(center)[
+  #grid(
+    columns: (auto, auto),
+    column-gutter: 20pt,
+    align: horizon,
+    image("images/GitHub_Invertocat_Black.png", width: 50pt),
+    box(width: 120pt, height: 120pt)[
+      #image("images/qr_code.png", width: 100%)
+    ],
+  )
+]
+```
+
+```{=typst}
+] // Ende col-content
+
+#context layout(size => {
+  let h = measure(columns(2, gutter: 24pt, col-content), width: size.width).height
+  place(top + left, dx: size.width / 2, line(angle: 90deg, length: h, stroke: 1pt + blue))
+})
+#columns(2, gutter: 24pt, col-content)
+
+#v(1fr)
+
+#poster-footer(
+  institution-logo: logo-img("images/SUB_logo.png", w: 400pt),   
+  conference: [
+    #text(fill: navy, size: 22pt, weight: "bold")[
+      2026 Conference of the Barcelona Declaration on Open Research Information
+    ] \
+    #text(fill: navy, size: 20pt)[
+      Berlin, 24–25 November 2026
+    ]
+  ],
+  cc-logo: logo-img("images/by.png", w: 150pt),          
+)
+```
