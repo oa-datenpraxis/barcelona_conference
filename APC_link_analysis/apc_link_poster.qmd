@@ -251,22 +251,104 @@ Breaking down the 7% matched only via relationships by relationship type shows t
   )
 ```
 
+
+
 ```{=typst}
 #align(center)[
   #text(size: 18pt, style: "italic")[
-    Figure 3: Example of missing direct relationship between University of Tübingen (paying insitution) and University Children's Hospital Tübingen (author affiliation)
+    Figure 3: Example of missing direct relationship between University of Tübingen (paying institution) and University Children's Hospital Tübingen (author affiliation)
+  ]
+
+  #v(5pt)
+
+  #let ror-green = rgb("#1a8c73")
+
+  #let ror-link(url, label) = link(url)[#text(fill: ror-green)[#label]]
+
+  #let ror-record(id, name, sections) = {
+    align(left)[
+      #text(fill: ror-green, size: 16pt)[#link(id)[#id]]
+      #v(2pt)
+      #text(weight: "bold", size: 16pt)[#name]
+      #v(2pt)
+      #text(weight: "bold", size: 13pt)[RELATIONSHIPS]
+      #v(1pt)
+      #for section in sections [
+        #text(weight: "bold", size: 12pt)[#section.title] \
+        #for item in section.items [
+          #text(size: 12pt)[#ror-link(item.url, item.name)] \
+        ]
+      ]
     ]
+  }
+
   #grid(
     columns: (1fr, 1fr, 1fr),
-    column-gutter: 20pt,
-    align: horizon,
-    image("images/uni_tuebingen.png", width: 69%),
-    image("images/uniklinik_tuebingen.png", width: 70%),
-    image("images/kinderklinik_tuebingen.png", width: 90%),
+    column-gutter: 24pt,
+    align: top,
+
+    ror-record(
+      "https://ror.org/03a1kwz48",
+      "University of Tübingen",
+      (
+        (
+          title: "Child Organizations",
+          items: (
+            (url: "https://ror.org/04zzwzx41", name: "Hertie Institute for Clinical Brain Research"),
+            (url: "https://ror.org/00v34f693", name: "Quantitative Biology Center"),
+            (url: "https://ror.org/005pfhc08", name: "Senckenberg Centre for Human Evolution and Palaeoenvironment"),
+            (url: "https://ror.org/0107nyd78", name: "Tübingen AI Center"),
+            (url: "https://ror.org/01kkkw551", name: "Zentrum für Datenverarbeitung"),
+          )
+        ),
+        (
+          title: "Related Organizations",
+          items: (
+            (url: "https://ror.org/02a2sfd38", name: "Klinikum Esslingen"),
+            (url: "https://ror.org/00pjgxh97", name: "Universitätsklinikum Tübingen"),
+          )
+        ),
+      )
+    ),
+
+    ror-record(
+      "https://ror.org/00pjgxh97",
+      "Universitätsklinikum Tübingen",
+      (
+        (
+          title: "Child Organizations",
+          items: (
+            (url: "https://ror.org/04zzwzx41", name: "Hertie Institute for Clinical Brain Research"),
+            (url: "https://ror.org/01bavmk12", name: "Poliklinik für Zahnärztliche Prothetik mit Propädeutik"),
+            (url: "https://ror.org/02veq1j93", name: "Universitäts Frauenklinik"),
+            (url: "https://ror.org/03esvmb28", name: "University Children's Hospital Tübingen"),
+          )
+        ),
+        (
+          title: "Related Organizations",
+          items: (
+            (url: "https://ror.org/03a1kwz48", name: "University of Tübingen"),
+            (url: "https://ror.org/05a27za87", name: "ERN-RND"),
+          )
+        ),
+      )
+    ),
+
+    ror-record(
+      "https://ror.org/03esvmb28",
+      "University Children's Hospital Tübingen",
+      (
+        (
+          title: "Parent Organizations",
+          items: (
+            (url: "https://ror.org/00pjgxh97", name: "Universitätsklinikum Tübingen"),
+          )
+        ),
+      )
+    ),
   )
 ]
 ```
-
 
 ```{=typst}
 #colbreak()
