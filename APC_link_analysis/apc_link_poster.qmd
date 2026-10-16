@@ -395,7 +395,7 @@ article_level |>
 ```
 
 
-Without corresponding-author data, first-author affiliation identifies the paying institution for the large majority of articles. For articles with corresponding-author data, corresponding author affiliations show the highest recall for identifying the paying institution.
+Without corresponding-author data, first- and last-author affiliations identify the paying institution for the large majority of articles. For articles with corresponding-author data, corresponding author affiliations show the highest recall for identifying the paying institution.
 
 # Are first and/or last author affiliations a good proxy for identifying the paying institution?
 
