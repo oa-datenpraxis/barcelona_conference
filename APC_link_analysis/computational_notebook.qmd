@@ -21,14 +21,14 @@ To test the assumptions we consider the following questions:
 - How complete is the coverage of OpenAlex corresponding-author data?
 - How well does ROR-based matching work?
 - At which author-position is the paying institution recorded as affiliation? 
-- Are first author affiliations a good proxy for identifying the paying institution?
+- Are first and/or author affiliations a good proxy for identifying the paying institution?
 
 
 ## Data
 
 The OpenAPC dataset in version v5.11.5-5-1 [@OpenAPC2026] was used to collect APC data for German institutions. Specifically, we restricted the OpenAPC dataset to the files `apc_de.csv` (which contains journal article APC payment data), `transformative_agreements.csv` (which contains APC payment data in the context of transformative agreements), and `institutions.csv` (which links institution names from the other files to Research Organization Registry (ROR) IDs). 
 
-To retrieve OpenAlex author-level metadata, the OpenAlex Walden snapshot from 2026-06-26 was used. Data were accessed through the SUB Göttingen [Open Scholarly Data warehouse](https://console.cloud.google.com/bigquery?hl=en&project=subugoe-collaborative) on Google BigQuery [@SUB].
+To retrieve OpenAlex author-level metadata, the OpenAlex Walden snapshot from 2026-06-26 was used. Data were accessed through the SUB Göttingen [Open Scholarly Data warehouse](https://console.cloud.google.com/bigquery?hl=en&project=subugoe-collaborative) on Google BigQuery.
 
 The Research Organization Registry (ROR) data set in version v2.11 [@ROR2026] was used to collect ROR IDs and institutional relationships for German institutions.
 
@@ -44,14 +44,14 @@ library(tidyverse)
 library(here)
 library(scales)
 library(ggVennDiagram)
-options(scipen = 999) 
+options(scipen = 999)
 ```
 
 ```{r}
 #| message: false
-oal    <- read_csv(here("APC_link_analysis/data", "res.csv"))
+oal <- read_csv(here("APC_link_analysis/data", "res.csv"))
 apc_df <- read_csv(here("APC_link_analysis/data", "apc_df.csv"))
-ror    <- read_csv(here("APC_link_analysis/data", "v2.11-2026-08-03-ror-data.csv"))
+ror <- read_csv(here("APC_link_analysis/data", "v2.11-2026-08-03-ror-data.csv"))
 ```
 
 ## Data preparation
@@ -86,7 +86,7 @@ glimpse(ror)
 oal_all <- oal |>
   mutate(
     doi_norm   = tolower(doi),
-    ror_author = tolower(ror)      
+    ror_author = tolower(ror)
   )
 
 ror_de <- ror |>
@@ -98,7 +98,7 @@ apc_joined <- apc_df |>
   filter(!is.na(doi)) |>
   mutate(
     doi_norm = tolower(paste0("https://doi.org/", doi)),
-    ror_norm = tolower(ror_id)     
+    ror_norm = tolower(ror_id)
   ) |>
   inner_join(oal_all, by = "doi_norm") |>
   select(
@@ -140,15 +140,15 @@ Five types of matches are possible and checked in this order:
 apc_match <- apc_joined |>
   filter(!is.na(ror_norm)) |>
   mutate(
-    rel_lower    = tolower(relationships),
-    parent_list  = str_extract(rel_lower, "parent: [^;]*"),
-    child_list   = str_extract(rel_lower, "child: [^;]*"),
+    rel_lower = tolower(relationships),
+    parent_list = str_extract(rel_lower, "parent: [^;]*"),
+    child_list = str_extract(rel_lower, "child: [^;]*"),
     related_list = str_extract(rel_lower, "related: [^;]*"),
     predecessor_list = str_extract(rel_lower, "predecessor: [^;]*"),
     match_type = case_when(
       ror_norm == ror_author ~ "exact",
-      str_detect(parent_list,  fixed(ror_author)) ~ "author_ror_is_parent",
-      str_detect(child_list,   fixed(ror_author)) ~ "author_ror_is_child",
+      str_detect(parent_list, fixed(ror_author)) ~ "author_ror_is_parent",
+      str_detect(child_list, fixed(ror_author)) ~ "author_ror_is_child",
       str_detect(related_list, fixed(ror_author)) ~ "author_ror_is_related",
       str_detect(predecessor_list, fixed(ror_author)) ~ "author_ror_is_predecessor",
       TRUE ~ NA_character_
@@ -165,16 +165,18 @@ apc_match |>
   count(institution_full_name, institution_display_name, match_type, sort = TRUE)
 ```
 
-These are examples of paying institutions and author affiliations where a match could only be established through relationships recorded in the ROR record. The first ten entries show that this is the case for several universities and their university hospitals, because even though these are related institutions they often have separate ROR IDs. Without using ROR relationships these cases would appear as unmatched.
+These are examples of paying institutions and author affiliations where a match could only be established through relationships recorded in the ROR record. The first ten entries show that this is the case for several universities and their university hospitals, because even though these are related institutions they often have separate ROR IDs. Without using ROR relationships these cases would be unmatched.
 
 
 Checking cases where the ROR record doesn't contain any relationships.
 
 ```{r}
-apc_match |> 
-  filter(is.na(match_type),
-         is.na(relationships)) |> 
-  count(institution_full_name) |> 
+apc_match |>
+  filter(
+    is.na(match_type),
+    is.na(relationships)
+  ) |>
+  count(institution_full_name) |>
   arrange(desc(n))
 ```
 
@@ -195,39 +197,37 @@ First the aggregated object `article_level` is derived from `apc_match`. `articl
 article_level <- apc_match |>
   group_by(doi_norm) |>
   summarise(
-    period       = first(period),
-    payer_ror    = first(ror_norm),
-    payer_name   = first(institution_full_name),
-    publisher    = first(publisher),
+    period = first(period),
+    payer_ror = first(ror_norm),
+    payer_name = first(institution_full_name),
+    publisher = first(publisher),
     transformative_agreement = any(!is.na(agreement)),
-    has_corr     = any(is_corresponding %in% TRUE),
-    payer_any    = any(!is.na(match_type)),
-    payer_first  = any(!is.na(match_type) & author_position %in% "first"),
+    has_corr = any(is_corresponding %in% TRUE),
+    payer_any = any(!is.na(match_type)),
+    payer_first = any(!is.na(match_type) & author_position %in% "first"),
     payer_middle = any(!is.na(match_type) & author_position %in% "middle"),
-    payer_last   = any(!is.na(match_type) & author_position %in% "last"),
-    payer_corr   = any(!is.na(match_type) & is_corresponding %in% TRUE),
-    exact_any    = any(match_exact),
-    exact_first  = any(match_exact & author_position %in% "first"),
+    payer_last = any(!is.na(match_type) & author_position %in% "last"),
+    payer_corr = any(!is.na(match_type) & is_corresponding %in% TRUE),
+    exact_any = any(match_exact),
+    exact_first = any(match_exact & author_position %in% "first"),
     exact_middle = any(match_exact & author_position %in% "middle"),
-    exact_last   = any(match_exact & author_position %in% "last"),
-    exact_corr   = any(match_exact & is_corresponding %in% TRUE),
+    exact_last = any(match_exact & author_position %in% "last"),
+    exact_corr = any(match_exact & is_corresponding %in% TRUE),
     .groups = "drop"
   ) |>
   mutate(position_category = case_when(
-        !payer_any                             ~ "no match",
-        payer_first & payer_last & payer_corr  ~ "first + last + corresponding",
-        payer_first & payer_corr               ~ "first + corresponding",
-        payer_last  & payer_corr               ~ "last + corresponding",
-        payer_middle & payer_corr              ~ "middle + corresponding",
-        payer_first & payer_last               ~ "first + last",
-        payer_corr                             ~ "corresponding only",
-        payer_first                            ~ "first only",
-        payer_last                             ~ "last only",
-        payer_middle                           ~ "middle only",
-        TRUE                                   ~ "no position match"   
-))
-
-
+    !payer_any ~ "no match",
+    payer_first & payer_last & payer_corr ~ "first + last + corresponding",
+    payer_first & payer_corr ~ "first + corresponding",
+    payer_last & payer_corr ~ "last + corresponding",
+    payer_middle & payer_corr ~ "middle + corresponding",
+    payer_first & payer_last ~ "first + last",
+    payer_corr ~ "corresponding only",
+    payer_first ~ "first only",
+    payer_last ~ "last only",
+    payer_middle ~ "middle only",
+    TRUE ~ "no position match"
+  ))
 ```
 
 ```{r}
@@ -242,8 +242,8 @@ Additionally, we precompute two small summary objects:
 
 
 ```{r}
-only_via_rel_dois <- article_level |> 
-  filter(payer_any & !exact_any) |> 
+only_via_rel_dois <- article_level |>
+  filter(payer_any & !exact_any) |>
   pull(doi_norm)
 
 rel_shares <- apc_match |>
@@ -252,23 +252,25 @@ rel_shares <- apc_match |>
   summarise(n_articles = n_distinct(doi_norm), .groups = "drop") |>
   mutate(share_of_articles = n_articles / length(only_via_rel_dois))
 
-reason <- apc_match |> 
-  group_by(doi_norm) |> 
+reason <- apc_match |>
+  group_by(doi_norm) |>
   summarise(
-    any_match           = any(!is.na(match_type)),
+    any_match = any(!is.na(match_type)),
     any_affiliation_ror = any(!is.na(ror_author)),
     payer_has_relations = !is.na(first(relationships)),
     .groups = "drop"
-  ) |> 
-  filter(!any_match) |>    
+  ) |>
+  filter(!any_match) |>
   mutate(reason = case_when(
-    !any_affiliation_ror  ~ "no author affiliation has a ROR ID",
-    !payer_has_relations  ~ "payer ROR record has no relationships recorded",
-    TRUE                  ~ "ROR exists, but no direct relationship found"
-  )) |> 
-  count(reason) |> 
-  mutate(share_of_no_match  = n / sum(n),
-         share_of_all_articles = n / n_distinct(apc_match$doi_norm))
+    !any_affiliation_ror ~ "no author affiliation has a ROR ID",
+    !payer_has_relations ~ "payer ROR record has no relationships recorded",
+    TRUE ~ "ROR exists, but no direct relationship found"
+  )) |>
+  count(reason) |>
+  mutate(
+    share_of_no_match = n / sum(n),
+    share_of_all_articles = n / n_distinct(apc_match$doi_norm)
+  )
 ```
 
 ```{r}
@@ -328,13 +330,14 @@ Roughly 92% of articles have at least one author marked as corresponding author 
 
 
 ```{r}
-article_level |> 
+article_level |>
   count(has_corr) |>
-  mutate(share = n / sum(n)) |> 
+  mutate(share = n / sum(n)) |>
   ggplot(aes(x = has_corr, y = n, fill = has_corr)) +
   geom_col() +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            vjust = -0.3, size = 3) +
+    vjust = -0.3, size = 3
+  ) +
   scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
   scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"), guide = "none") +
   theme_minimal() +
@@ -348,7 +351,7 @@ Number of articles and share of corresponding author flags per publication year.
 article_level |>
   group_by(period) |>
   summarise(
-    n_articles        = n(),
+    n_articles = n(),
     share_corr_marked = mean(has_corr),
     .groups = "drop"
   )
@@ -363,11 +366,14 @@ article_level |>
   ggplot(aes(x = factor(period), y = n, fill = has_corr)) +
   geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            position = position_dodge2(preserve = "single", width = 0.9),
-            vjust = -0.3, size = 3) +
+    position = position_dodge2(preserve = "single", width = 0.9),
+    vjust = -0.3, size = 3
+  ) +
   scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
-  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"),
-                     labels = c("TRUE" = "TRUE", "FALSE" = "FALSE")) +
+  scale_fill_manual(
+    values = c("TRUE" = "#051740", "FALSE" = "#4086e0"),
+    labels = c("TRUE" = "TRUE", "FALSE" = "FALSE")
+  ) +
   theme_minimal() +
   labs(x = "publication year", y = "number of articles", fill = "has \ncorresponding")
 ```
@@ -396,7 +402,7 @@ apc_match |>
   group_by(match_type) |>
   summarise(
     n_payer_rors = n_distinct(ror_norm),
-    n_articles   = n_distinct(doi_norm),
+    n_articles = n_distinct(doi_norm),
     .groups = "drop"
   ) |>
   mutate(
@@ -412,10 +418,10 @@ Count and shares of distinct articles where the paying institution could be matc
 ```{r}
 article_level |>
   summarise(
-    n_articles             = n(),
-    exact                  = sum(exact_any),
+    n_articles = n(),
+    exact = sum(exact_any),
     only_via_relationships = sum(payer_any & !exact_any),
-    no_match               = sum(!payer_any),
+    no_match = sum(!payer_any),
     .groups = "drop"
   ) |>
   mutate(
@@ -431,23 +437,25 @@ Number of distinct articles where the paying institution could **not** be matche
 
 
 ```{r}
-apc_match |> 
-  group_by(doi_norm) |> 
+apc_match |>
+  group_by(doi_norm) |>
   summarise(
-    any_match           = any(!is.na(match_type)),
+    any_match = any(!is.na(match_type)),
     any_affiliation_ror = any(!is.na(ror_author)),
     payer_has_relations = !is.na(first(relationships)),
     .groups = "drop"
-  ) |> 
-  filter(!any_match) |>    
+  ) |>
+  filter(!any_match) |>
   mutate(reason = case_when(
-    !any_affiliation_ror  ~ "no author affiliation has a ROR ID",
-    !payer_has_relations  ~ "payer ROR record has no relationships recorded",
-    TRUE                  ~ "ROR exists, but no direct relationship found"
-  )) |> 
-  count(reason) |> 
-  mutate(share_of_no_match  = n / sum(n),
-         share_of_all_articles = n / n_distinct(apc_match$doi_norm))
+    !any_affiliation_ror ~ "no author affiliation has a ROR ID",
+    !payer_has_relations ~ "payer ROR record has no relationships recorded",
+    TRUE ~ "ROR exists, but no direct relationship found"
+  )) |>
+  count(reason) |>
+  mutate(
+    share_of_no_match = n / sum(n),
+    share_of_all_articles = n / n_distinct(apc_match$doi_norm)
+  )
 ```
 
 For the majority of the unmatched articles the paying institution's ROR record does list relationships, but none of them corresponds to any author affiliation of the article. As illustrated by the Tübingen example above, this does not necessarily mean the institutions are unrelated in practice, but reflects how ROR structures multi-level relationships, which this matching approach, checking only one relationship level, does not fully resolve. A smaller share of unmatched articles is explained by missing ROR IDs on the author-affiliation side, and fewer still by paying institutions whose ROR record has no relationships recorded at all.
@@ -460,8 +468,8 @@ The code below shows, separately for articles with and without marked correspond
 
 
 ```{r}
-article_level |> 
-  group_by(has_corr) |> 
+article_level |>
+  group_by(has_corr) |>
   summarise(
     n_articles      = n(),
     payer_at_first  = mean(payer_first),
@@ -487,110 +495,146 @@ article_level |>
 The figure below visualizes this distribution, split by whether a corresponding author is marked, with position categories ordered by their maximum share across the two groups.
 
 ```{r}
-article_level |> 
-  count(has_corr, position_category) |> 
-  group_by(has_corr) |> 
-  mutate(share = n / sum(n)) |> 
-  ungroup() |> 
+#| fig-width: 15
+#| fig-height: 9
+#| fig-align: center
+
+article_level |>
+  count(has_corr, position_category) |>
+  group_by(has_corr) |>
+  mutate(share = n / sum(n)) |>
+  ungroup() |>
+  mutate(has_corr = factor(has_corr, levels = c(TRUE, FALSE))) |>
   ggplot(aes(x = share, y = fct_reorder(position_category, share, .fun = max), fill = has_corr)) +
-  geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
+  geom_col() +
+  facet_wrap(
+    vars(has_corr),
+    labeller = as_labeller(c("TRUE" = "has corresponding-author data", "FALSE" = "has no corresponding-author data"))
+  ) +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            position = position_dodge2(preserve = "single", width = 0.9),
-            hjust = -0.1, size = 3) +
+    hjust = -0.1, size = 5.5
+  ) +
   scale_x_continuous(labels = label_percent(), expand = expansion(mult = c(0, 0.15))) +
-  scale_fill_manual(values = c(
-    "TRUE"    = "#051740",
-    "FALSE" = "#4086e0"
-  )) +
-  theme_minimal() +
-  labs(x = "share of articles", y = NULL, fill = "has corresponding")
+  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"), guide = "none") +
+  theme_light(base_size = 20) +
+  theme(strip.background = element_rect(fill = "#cbd8e8"), strip.text = element_text(colour = "black")) +
+  labs(x = "share of articles", y = NULL)
 ```
 
 For articles with marked corresponding authors, the single largest category is `first + last + corresponding`, meaning the paying institution is simultaneously affiliated with the first author, the last author, and the corresponding author. Combined with the smaller categories that also include *corresponding* (`first + corresponding`, `last + corresponding`, `middle + corresponding`), the paying institution is identified via the corresponding author in the large majority of these articles.
 
-### Are first author affiliations a good proxy for identifying the paying institution?
+### Are first and/or last author affiliations a good proxy for identifying the paying institution?
 
-We are especially interested in how often the paying institution as first author affiliation and the paying institution as corresponding author affiliation coincide and what might is missed, if one identifies the paying institution through corresponding-author data.
+We are especially interested in how often the paying institution as first and/or last author affiliation and the paying institution as corresponding author affiliation coincide and what might is missed, if the paying institution is only identified through corresponding-author data.
 
-The code below summarizes, across all articles (not only those with marked corresponding authors), how often the paying institution appears at the corresponding author versus at the first author.
+The code below summarizes, across all articles (not only those with marked corresponding authors), how often the paying institution appears at the corresponding author versus at the first and last author.
 
 ```{r}
-article_level |> 
-    summarise(
+article_level |>
+  summarise(
     n_articles = n(),
     n_payer_at_corresponding = sum(position_category %in% c(
-     "first + last + corresponding", "first + corresponding",
-     "last + corresponding", "middle + corresponding"
+      "first + last + corresponding", "first + corresponding",
+      "last + corresponding", "middle + corresponding"
     )),
-   payer_at_corresponding = mean(position_category %in% c(
-     "first + last + corresponding", "first + corresponding",
-     "last + corresponding", "middle + corresponding"
+    payer_at_corresponding = mean(position_category %in% c(
+      "first + last + corresponding", "first + corresponding",
+      "last + corresponding", "middle + corresponding"
     )),
     n_payer_at_first = sum(position_category %in% c(
-     "first + last + corresponding", "first + corresponding",
-     "first + last", "first only"
+      "first + last + corresponding", "first + corresponding",
+      "first + last", "first only"
     )),
     payer_at_first = mean(position_category %in% c(
-     "first + last + corresponding", "first + corresponding",
-     "first + last", "first only"
+      "first + last + corresponding", "first + corresponding",
+      "first + last", "first only"
+    )),
+    n_payer_at_last = sum(position_category %in% c(
+      "first + last + corresponding", "last + corresponding",
+      "first + last", "last only"
+    )),
+    payer_at_last = mean(position_category %in% c(
+      "first + last + corresponding", "last + corresponding",
+      "first + last", "last only"
     ))
-  ) 
+  )
 ```
 
-Across the full analysis set, the paying institution appears at the first author for a similar share of articles as it appears at the corresponding author, even though corresponding authors are only marked 92% of articles. This might suggest that first-author affiliation performs comparably to corresponding-author affiliation as an identification strategy.
+Across the full analysis set, the paying institution appears at the first author for a similar share of articles as it appears at the corresponding author, even though corresponding authors are only marked for 92% of articles. This might suggest that first-author affiliation performs comparably to corresponding-author affiliation as an identification strategy. Last author affiliation identifies the paying institution in about 12% less cases than first author affiliation.
 
-
-Restricting to articles with marked corresponding authors where the paying institution was matched to at least one author at all, the code below checks whether the paying institution matches the first author against whether it matches the corresponding author.
+Restricting to articles with marked corresponding authors where the paying institution was matched to at least one author at all, the code below checks whether the paying institution matches the first or last author against whether it matches the corresponding author.
 
 ```{r}
 article_level |>
   filter(has_corr, payer_any) |>
-  count(payer_first, payer_corr) |>
+  count(payer_first, payer_last, payer_corr) |>
   mutate(share = n / sum(n))
 ```
 
-First and corresponding author agree in the majority of cases. Articles where the corresponding author matches but the first author does not are the cases a first-author proxy would miss. These cases make up for about 8%.
+First, last and corresponding author agree in the majority of cases. Articles where the corresponding author matches but the first author does not are the cases a first-author proxy would miss. These cases make up for about 8%. Articles where the corresponding author matches but the last author does not are the cases a last-author proxy would miss. These cases make up for about 21%. 
 
 The following checks how much a first-author fallback adds across all articles, i.e. how many additional articles would be captured through the first author affiliation.
 
 ```{r}
-article_level |> 
+article_level |>
   summarise(
-    corresponding            = sum(payer_corr),
-    first_additional         = sum(payer_first & !payer_corr),
-    union_corr_or_first      = sum(payer_corr | payer_first),
-    gain_pct = first_additional / corresponding
+    corresponding = sum(payer_corr),
+    first_additional = sum(payer_first & !payer_corr),
+    union_corr_first = sum(payer_corr | payer_first),
+    gain_pct = first_additional / union_corr_first
   )
 ```
 
-Using first-author affiliation as an additional fallback increases the number of identified articles by about 7.6%. This is particularly relevant for the 8% of articles with no marked corresponding authors, where first-author affiliation is an available signal.
+Using first-author affiliation as an additional fallback increases the number of identified articles by about 7.1%. This is particularly relevant for the 8% of articles with no marked corresponding authors, where first-author affiliation is an available signal.
 
-The Venn diagram below visualizes the overlap between articles where the paying institution matches the corresponding author and articles where it matches the first author, across the full analysis set.
+We also check how many additional articles would be captured through the last-author affiliation.
+
+```{r}
+article_level |>
+  summarise(
+    corresponding       = sum(payer_corr),
+    last_additional     = sum(payer_last & !payer_corr),
+    union_corr_last     = sum(payer_corr | payer_last),
+    gain_pct            = last_additional / union_corr_last
+  )
+```
+
+Using last-author affiliation as an additional fallback increases the number of identified articles by about 6.8%, which is a little less than with first-author affiliation.
+
+The Venn diagram below visualizes the overlap between articles where the paying institution matches the corresponding author, articles where it matches the first author, and articles where it matches the last author across the full analysis set.
 
 ```{r}
 venn_list <- list(
-  "Corresponding" = article_level |> 
+  "Corresponding" = article_level |>
     filter(position_category %in% c(
       "first + last + corresponding", "first + corresponding",
       "last + corresponding", "middle + corresponding"
-    )) |> 
+    )) |>
     pull(doi_norm),
-  "First" = article_level |> 
+  "First" = article_level |>
     filter(position_category %in% c(
       "first + last + corresponding", "first + corresponding",
       "first + last", "first only"
-    )) |> 
+    )) |>
+    pull(doi_norm),
+  "Last" = article_level |>
+    filter(position_category %in% c(
+      "first + last + corresponding", "last + corresponding",
+      "first + last", "last only"
+    )) |>
     pull(doi_norm)
 )
 ```
 
 ```{r}
-ggVennDiagram(venn_list, label = "both", set_size = 4, label_size = 4) +
+#| fig-width: 20
+#| fig-height: 14
+#| fig-align: center
+
+ggVennDiagram(venn_list, label = "both", set_size = 8, label_size = 8) +
   scale_fill_gradient(low = "#cbd8e8", high = "#051740") +
-  theme(legend.position = "none") +
-  coord_flip() +
-  theme(aspect.ratio = 0.75)
+  theme(legend.position = "none")
 ```
 
 
-The two sets overlap substantially, confirming that first- and corresponding-author affiliation largely identify the same articles. The area unique to "First" represents the practical gain from using first author as a fallback proxy, while the area unique to "Corresponding" represents articles a first-author-only strategy would miss.
+The three sets overlap substantially, confirming that first-, last-, and corresponding-author affiliation largely identify the same articles. The areas unique to "First" and/or "Last" represent the practical gain from using first and/or last author as a fallback proxy, while the area unique to "Corresponding" represents articles a first-author-only or last-author-only strategies would miss. However, the combination of "First" and "Last" shows a larger additional gain than the area unique to "Corresponding".

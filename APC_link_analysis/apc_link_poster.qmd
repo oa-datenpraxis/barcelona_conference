@@ -6,8 +6,8 @@ format:
     papersize: a0
     fontsize: 25pt
     margin:
-      x: 4cm
-      y: 4cm
+      x: 3cm
+      y: 3cm
     page-numbering: false
     bibliography: refs.bib
     include-in-header:
@@ -67,7 +67,7 @@ library(tidyverse)
 library(here)
 library(scales)
 library(ggVennDiagram)
-options(scipen = 999) 
+options(scipen = 999)
 ```
 
 ```{r}
@@ -75,8 +75,8 @@ options(scipen = 999)
 #| echo: false
 
 article_level <- read_csv(here("APC_link_analysis/data", "article_level.csv"))
-rel_shares    <- read_csv(here("APC_link_analysis/data", "rel_shares.csv"))
-reason        <- read_csv(here("APC_link_analysis/data", "reason.csv"))
+rel_shares <- read_csv(here("APC_link_analysis/data", "rel_shares.csv"))
+reason <- read_csv(here("APC_link_analysis/data", "reason.csv"))
 ```
 
 ```{=typst}
@@ -125,6 +125,23 @@ Corresponding-author data in OpenAlex is the basis for testing the policy assump
 
 :::: {layout-ncol="2"}
 
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 1: Share of corresponding-author data
+  ]
+]
+```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 2: Share of corresponding-author data per publication year
+  ]
+]
+```
+
+
 ```{r}
 #| echo: false
 #| fig-width: 7
@@ -132,13 +149,14 @@ Corresponding-author data in OpenAlex is the basis for testing the policy assump
 #| fig-align: center
 
 
-article_level |> 
+article_level |>
   count(has_corr) |>
-  mutate(share = n / sum(n)) |> 
+  mutate(share = n / sum(n)) |>
   ggplot(aes(x = has_corr, y = n, fill = has_corr)) +
   geom_col() +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            vjust = -0.3, size = 5.5) +
+    vjust = -0.3, size = 5.5
+  ) +
   scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
   scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"), guide = "none") +
   theme_minimal(base_size = 16) +
@@ -159,29 +177,16 @@ article_level |>
   ggplot(aes(x = factor(period), y = n, fill = has_corr)) +
   geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            position = position_dodge2(preserve = "single", width = 0.9),
-            vjust = -0.3, size = 4.6) +
+    position = position_dodge2(preserve = "single", width = 0.9),
+    vjust = -0.3, size = 4.6
+  ) +
   scale_y_continuous(labels = label_comma(), expand = expansion(mult = c(0, 0.17))) +
-  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"),
-                     labels = c("TRUE" = "TRUE", "FALSE" = "FALSE")) +
+  scale_fill_manual(
+    values = c("TRUE" = "#051740", "FALSE" = "#4086e0"),
+    labels = c("TRUE" = "TRUE", "FALSE" = "FALSE")
+  ) +
   theme_minimal(base_size = 16) +
   labs(x = "publication year", y = "number of articles", fill = "has \ncorresponding")
-```
-
-```{=typst}
-#align(center)[
-  #text(size: 18pt, style: "italic")[
-    Figure 1: Share of corresponding-author data
-  ]
-]
-```
-
-```{=typst}
-#align(center)[
-  #text(size: 18pt, style: "italic")[
-    Figure 2: Share of corresponding-author data per publication year
-  ]
-]
 ```
 
 ::::
@@ -207,7 +212,6 @@ shares <- article_level |>
     rel_share   = mean(payer_any & !exact_any),
     none_share  = mean(!payer_any)
   )
-
 ```
 
 ```{=typst}
@@ -234,33 +238,35 @@ shares <- article_level |>
   )
 ```
 
-Breaking down the 7% matched only via relationships by relationship type shows that most affiliations are matched via the related relationship, followed by the child relationship. 
-
-```{=typst}
-#grid(
-  columns: (1fr, 1fr, 1fr, 1fr),
-  gutter: 1em,
-  value_box("`r scales::percent(rel_shares$share_of_articles[1], accuracy = 0.01)`", "`r format(rel_shares$n_articles[1], big.mark = ",")`", "child"),
-    value_box("`r scales::percent(rel_shares$share_of_articles[2], accuracy = 0.01)`", "`r format(rel_shares$n_articles[2], big.mark = ",")`", "parent"),
-      value_box("`r scales::percent(rel_shares$share_of_articles[3], accuracy = 0.01)`", "`r format(rel_shares$n_articles[3], big.mark = ",")`", "predecessor"),
-  value_box("`r scales::percent(rel_shares$share_of_articles[4], accuracy = 0.01)`", "`r format(rel_shares$n_articles[4], big.mark = ",")`", "related"),      
-  )
-```
-
-*Note that relationships might differ for separate affiliations of co-authors leading to an article potentially having multiple relationship matches.*
-
-Breaking down the 6% unmatched articles by reason shows that most unmatched cases stem from affiliations either genuinely having no connection to the paying institution or from gaps in recording multi-level institutional relationships in ROR.
+Breaking down the 7% matched only via relationships by relationship type shows that most affiliations are matched via the related relationship (`r scales::percent(rel_shares$share_of_articles[4], accuracy = 0.1)`), followed by the child relationship (`r scales::percent(rel_shares$share_of_articles[1], accuracy = 0.1)`). Breaking down the 6% unmatched articles by reason shows that most unmatched cases stem from affiliations either genuinely having no connection to the paying institution or from relationship gaps in ROR.
 
 
 ```{=typst}
 #grid(
   columns: (1fr, 1fr, 1fr),
   gutter: 1em,
-  value_box("`r scales::percent(reason$share_of_no_match[1], accuracy = 0.01)`", "`r format(reason$n[1], big.mark = ",")`", "ROR exists, but no direct \n relationship found"),
-    value_box("`r scales::percent(reason$share_of_no_match[2], accuracy = 0.01)`", "`r format(reason$n[2], big.mark = ",")`", "no author affiliation has a ROR ID"),
-      value_box("`r scales::percent(reason$share_of_no_match[3], accuracy = 0.01)`", "`r format(reason$n[3], big.mark = ",")`", "payer ROR record has no \n relationships recorded"),
+  value_box("`r scales::percent(reason$share_of_no_match[1], accuracy = 1)`", "`r format(reason$n[1], big.mark = ",")`", "ROR exists, but no direct \n relationship found"),
+    value_box("`r scales::percent(reason$share_of_no_match[2], accuracy = 1)`", "`r format(reason$n[2], big.mark = ",")`", "no author affiliation has a ROR ID"),
+      value_box("`r scales::percent(reason$share_of_no_match[3], accuracy = 1)`", "`r format(reason$n[3], big.mark = ",")`", "payer ROR record has no \n relationships recorded"),
   )
 ```
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 3: Example of missing direct relationship between University of Tübingen (paying insitution) and University Children's Hospital Tübingen (author affiliation)
+    ]
+  #grid(
+    columns: (1fr, 1fr, 1fr),
+    column-gutter: 20pt,
+    align: horizon,
+    image("images/uni_tuebingen.png", width: 69%),
+    image("images/uniklinik_tuebingen.png", width: 70%),
+    image("images/kinderklinik_tuebingen.png", width: 90%),
+  )
+]
+```
+
 
 ```{=typst}
 #colbreak()
@@ -268,8 +274,15 @@ Breaking down the 6% unmatched articles by reason shows that most unmatched case
 
 # At which author-position is the paying institution recorded as affiliation?
 
-Categorizing the paying institutions by author-position combinations shows they are most often affiliated with the first, last, *and*
-corresponding author simultaneously.
+Categorizing the paying institutions by author-position combinations shows they are most often affiliated with the first, last, *and* corresponding author simultaneously.
+
+```{=typst}
+#align(center)[
+  #text(size: 18pt, style: "italic")[
+    Figure 4: Share of articles per author-position category, with and without corresponding-author data
+  ]
+]
+```
 
 ```{r}
 #| echo: false
@@ -277,128 +290,80 @@ corresponding author simultaneously.
 #| fig-height: 9
 #| fig-align: center
 
-article_level |> 
-  count(has_corr, position_category) |> 
-  group_by(has_corr) |> 
-  mutate(share = n / sum(n)) |> 
-  ungroup() |> 
+article_level |>
+  count(has_corr, position_category) |>
+  group_by(has_corr) |>
+  mutate(share = n / sum(n)) |>
+  ungroup() |>
+  mutate(has_corr = factor(has_corr, levels = c(TRUE, FALSE))) |>
   ggplot(aes(x = share, y = fct_reorder(position_category, share, .fun = max), fill = has_corr)) +
-  geom_col(position = position_dodge2(preserve = "single", width = 0.9)) +
+  geom_col() +
+  facet_wrap(
+    vars(has_corr),
+    labeller = as_labeller(c("TRUE" = "has corresponding-author data", "FALSE" = "has no corresponding-author data"))
+  ) +
   geom_text(aes(label = percent(share, accuracy = 1)),
-            position = position_dodge2(preserve = "single", width = 0.9),
-            hjust = -0.1, size = 5.5) +
+    hjust = -0.1, size = 5.5
+  ) +
   scale_x_continuous(labels = label_percent(), expand = expansion(mult = c(0, 0.15))) +
-  scale_fill_manual(values = c(
-    "TRUE"    = "#051740",
-    "FALSE" = "#4086e0"
-  )) +
-  theme_minimal(base_size = 20) +
-  labs(x = "share of articles", y = NULL, fill = "has corresponding")
-```
-
-```{=typst}
-#align(center)[
-  #text(size: 18pt, style: "italic")[
-    Figure 3: Share of articles per author-position category, with and without corresponding-author data
-  ]
-]
+  scale_fill_manual(values = c("TRUE" = "#051740", "FALSE" = "#4086e0"), guide = "none") +
+  theme_light(base_size = 20) +
+  theme(strip.background = element_rect(fill = "#cbd8e8"), strip.text = element_text(colour = "black")) +
+  labs(x = "share of articles", y = NULL)
 ```
 
 
 Without corresponding-author data, first-author affiliation identifies the paying institution for the large majority of articles. For articles with corresponding-author data, corresponding author affiliations show the highest recall for identifying the paying institution.
 
-```{r}
-#| echo: false
-#| output: false
+# Are first and/or last author affiliations a good proxy for identifying the paying institution?
 
-
-payer <- article_level |> 
-  group_by(has_corr) |> 
-  summarise(
-    n_articles      = n(),
-    payer_at_first  = mean(payer_first),
-    payer_at_last   = mean(payer_last),
-    payer_at_middle = mean(payer_middle),
-    payer_at_corr   = mean(payer_corr),
-    no_match        = mean(!payer_any)
-  )
-```
-
-
-```{=typst}
-#let value_box(value, n, label, color: rgb("#051740")) = {
-  box(
-    width: 100%,
-    stroke: none,
-    align(center)[
-      #text(size: 32pt, weight: "bold", fill: color)[#value]
-      #v(1pt)
-      #text(size: 32pt, weight: "bold", fill: rgb("#4086e0"))[#n]
-      #v(4pt)
-      #text(size: 22pt, fill: rgb("#444444"))[#label]
-    ]
-  )
-}
-
-#grid(
-  columns: (1fr, 1fr, 1fr, 1fr, 1fr, 1fr, 1fr),
-  gutter: 1em,
-  value_box("`r payer$has_corr[2]`", "`r payer$has_corr[1]`", "has corres- \n ponding"),
-  value_box("`r format(payer$n_articles[2],  big.mark = ",")`", "`r format(payer$n_articles[1], big.mark = ",")`", "number of \n articles"),
-    value_box("`r scales::percent(payer$payer_at_first[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_first[1], accuracy = 1)`", "first"),
-      value_box("`r scales::percent(payer$payer_at_last[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_last[1], accuracy = 1)`", "last"),
-      value_box("`r scales::percent(payer$payer_at_middle[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_middle[1], accuracy = 1)`", "middle"),
-      value_box("`r scales::percent(payer$payer_at_corr[2], accuracy = 1)`", "`r scales::percent(payer$payer_at_corr[1], accuracy = 1)`", "corresponding"),
-      value_box("`r scales::percent(payer$no_match[2], accuracy = 1)`", "`r scales::percent(payer$no_match[1], accuracy = 1)`", "no match"),
-  )
-```
-
-# Are first author affiliations a good proxy for identifying the paying institution?
-
-Across all articles, first- and corresponding-author affiliations identify largely the same set of articles. Using first-author affiliations as a fallback or an additional filter captures articles that corresponding-author data alone would miss. 
+Across all articles, first-, last-, and corresponding-author affiliations identify largely the same set of articles. Using the combination of first- and last-author affiliations captures more additional articles (`r article_level |> summarise( first_last_additional = sum((payer_first | payer_last) & !payer_corr), union_corr_first_last = sum(payer_corr | payer_last | payer_first), gain_pct = first_last_additional / union_corr_first_last) |> pull(gain_pct) |> scales::percent(accuracy = 1)`) than corresponding-author data alone (`r article_level |> summarise(corr_additional = sum(payer_corr & !(payer_first | payer_last)), union_corr_first_last = sum(payer_corr | payer_last | payer_first), gain_pct = corr_additional / union_corr_first_last) |> pull(gain_pct) |> scales::percent(accuracy = 1)`).   
 
 ```{r}
 #| echo: false
 #| output: false
 
 venn_list <- list(
-  "Corresponding" = article_level |> 
+  "Corresponding" = article_level |>
     filter(position_category %in% c(
       "first + last + corresponding", "first + corresponding",
       "last + corresponding", "middle + corresponding"
-    )) |> 
+    )) |>
     pull(doi_norm),
-  "First" = article_level |> 
+  "First" = article_level |>
     filter(position_category %in% c(
       "first + last + corresponding", "first + corresponding",
       "first + last", "first only"
-    )) |> 
+    )) |>
+    pull(doi_norm),
+  "Last" = article_level |>
+    filter(position_category %in% c(
+      "first + last + corresponding", "last + corresponding",
+      "first + last", "last only"
+    )) |>
     pull(doi_norm)
 )
-```
-
-
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
-#| fig-width: 14
-#| fig-height: 8
-#| fig-align: center
-
-ggVennDiagram(venn_list, label = "both", set_size = 6, label_size = 6) +
-  scale_fill_gradient(low = "#cbd8e8", high = "#051740") +
-  theme(legend.position = "none") +
-  coord_flip() +
-  theme(aspect.ratio = 0.75)
 ```
 
 ```{=typst}
 #align(center)[
   #text(size: 18pt, style: "italic")[
-    Figure 4: Overlap between articles matched via first and corresponding author
+    Figure 5: Overlap between articles matched via first, last and corresponding author
   ]
 ]
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 20
+#| fig-height: 14
+#| fig-align: center
+
+ggVennDiagram(venn_list, label = "both", set_size = 8, label_size = 8) +
+  scale_fill_gradient(low = "#cbd8e8", high = "#051740") +
+  theme(legend.position = "none")
 ```
 
 # Conclusion
@@ -406,7 +371,7 @@ ggVennDiagram(venn_list, label = "both", set_size = 6, label_size = 6) +
 - **Coverage:** OpenAlex provides corresponding-author data for the large majority of articles.
 - **Matching:** ROR-based matching identifies the paying institution for most articles, ROR relationships extend exact ID matching.
 - **Author position:** The paying institution is most often affiliated with the first, last, *and* corresponding author.
-- **First author as proxy:** First-author affiliation can serve as a fallback or an additional filter.
+- **First/last author as proxy:** First- and last-author affiliations together can serve as a proxy or an additional filter.
 
 # Code Availability
 

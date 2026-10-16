@@ -124,7 +124,7 @@ div.csl-indent {
   <li><a href="#how-complete-is-the-coverage-of-openalex-corresponding-author-data" id="toc-how-complete-is-the-coverage-of-openalex-corresponding-author-data" class="nav-link" data-scroll-target="#how-complete-is-the-coverage-of-openalex-corresponding-author-data">How complete is the coverage of OpenAlex corresponding-author data?</a></li>
   <li><a href="#how-well-does-ror-based-matching-work" id="toc-how-well-does-ror-based-matching-work" class="nav-link" data-scroll-target="#how-well-does-ror-based-matching-work">How well does ROR-based matching work?</a></li>
   <li><a href="#at-which-author-position-is-the-paying-institution-recorded-as-affiliation" id="toc-at-which-author-position-is-the-paying-institution-recorded-as-affiliation" class="nav-link" data-scroll-target="#at-which-author-position-is-the-paying-institution-recorded-as-affiliation">At which author-position is the paying institution recorded as affiliation?</a></li>
-  <li><a href="#are-first-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" id="toc-are-first-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" class="nav-link" data-scroll-target="#are-first-author-affiliations-a-good-proxy-for-identifying-the-paying-institution">Are first author affiliations a good proxy for identifying the paying institution?</a></li>
+  <li><a href="#are-first-andor-last-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" id="toc-are-first-andor-last-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" class="nav-link" data-scroll-target="#are-first-andor-last-author-affiliations-a-good-proxy-for-identifying-the-paying-institution">Are first and/or last author affiliations a good proxy for identifying the paying institution?</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -162,13 +162,13 @@ div.csl-indent {
 <li>How complete is the coverage of OpenAlex corresponding-author data?</li>
 <li>How well does ROR-based matching work?</li>
 <li>At which author-position is the paying institution recorded as affiliation?</li>
-<li>Are first author affiliations a good proxy for identifying the paying institution?</li>
+<li>Are first and/or author affiliations a good proxy for identifying the paying institution?</li>
 </ul>
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
 <p>The OpenAPC dataset in version v5.11.5-5-1 <span class="citation" data-cites="OpenAPC2026">(<a href="#ref-OpenAPC2026" role="doc-biblioref"><span class="nocase">Christoph Broschinski et al.</span>, 2026</a>)</span> was used to collect APC data for German institutions. Specifically, we restricted the OpenAPC dataset to the files <code>apc_de.csv</code> (which contains journal article APC payment data), <code>transformative_agreements.csv</code> (which contains APC payment data in the context of transformative agreements), and <code>institutions.csv</code> (which links institution names from the other files to Research Organization Registry (ROR) IDs).</p>
-<p>To retrieve OpenAlex author-level metadata, the OpenAlex Walden snapshot from 2026-06-26 was used. Data were accessed through the SUB Göttingen <a href="https://console.cloud.google.com/bigquery?hl=en&amp;project=subugoe-collaborative">Open Scholarly Data warehouse</a> on Google BigQuery <span class="citation" data-cites="SUB">(<a href="#ref-SUB" role="doc-biblioref"><em><span>Open Scholarly Data @ SUB Göttingen - Overview</span></em>, n.d.</a>)</span>.</p>
+<p>To retrieve OpenAlex author-level metadata, the OpenAlex Walden snapshot from 2026-06-26 was used. Data were accessed through the SUB Göttingen <a href="https://console.cloud.google.com/bigquery?hl=en&amp;project=subugoe-collaborative">Open Scholarly Data warehouse</a> on Google BigQuery.</p>
 <p>The Research Organization Registry (ROR) data set in version v2.11 <span class="citation" data-cites="ROR2026">(<a href="#ref-ROR2026" role="doc-biblioref">Research Organization Registry, 2026</a>)</span> was used to collect ROR IDs and institutional relationships for German institutions.</p>
 <p>The code for combining the OpenAPC data files, filtering the OpenAPC data for German institutions and the publication period 2021–2025, and querying Google BigQuery is available in the <code>bigquery.R</code> script in the data folder.</p>
 </section>
@@ -180,12 +180,12 @@ div.csl-indent {
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggVennDiagram)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>oal    <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"res.csv"</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>oal <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"res.csv"</span>))</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>apc_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"apc_df.csv"</span>))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ror    <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"v2.11-2026-08-03-ror-data.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ror <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"v2.11-2026-08-03-ror-data.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="data-preparation" class="level2">
@@ -299,7 +299,7 @@ $ types                                               &lt;chr&gt; "education; fu
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>oal_all <span class="ot">&lt;-</span> oal <span class="sc">|&gt;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">doi_norm   =</span> <span class="fu">tolower</span>(doi),</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ror_author =</span> <span class="fu">tolower</span>(ror)      </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ror_author =</span> <span class="fu">tolower</span>(ror)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>ror_de <span class="ot">&lt;-</span> ror <span class="sc">|&gt;</span></span>
@@ -311,7 +311,7 @@ $ types                                               &lt;chr&gt; "education; fu
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(doi)) <span class="sc">|&gt;</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">doi_norm =</span> <span class="fu">tolower</span>(<span class="fu">paste0</span>(<span class="st">"https://doi.org/"</span>, doi)),</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ror_norm =</span> <span class="fu">tolower</span>(ror_id)     </span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">ror_norm =</span> <span class="fu">tolower</span>(ror_id)</span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(oal_all, <span class="at">by =</span> <span class="st">"doi_norm"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
@@ -405,15 +405,15 @@ $ relationships            &lt;chr&gt; "related: https://ror.org/01226dv09", "re
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>apc_match <span class="ot">&lt;-</span> apc_joined <span class="sc">|&gt;</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(ror_norm)) <span class="sc">|&gt;</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">rel_lower    =</span> <span class="fu">tolower</span>(relationships),</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">parent_list  =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"parent: [^;]*"</span>),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">child_list   =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"child: [^;]*"</span>),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">rel_lower =</span> <span class="fu">tolower</span>(relationships),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">parent_list =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"parent: [^;]*"</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">child_list =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"child: [^;]*"</span>),</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">related_list =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"related: [^;]*"</span>),</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">predecessor_list =</span> <span class="fu">str_extract</span>(rel_lower, <span class="st">"predecessor: [^;]*"</span>),</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">match_type =</span> <span class="fu">case_when</span>(</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      ror_norm <span class="sc">==</span> ror_author <span class="sc">~</span> <span class="st">"exact"</span>,</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(parent_list,  <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_parent"</span>,</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(child_list,   <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_child"</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(parent_list, <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_parent"</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(child_list, <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_child"</span>,</span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(related_list, <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_related"</span>,</span>
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(predecessor_list, <span class="fu">fixed</span>(ror_author)) <span class="sc">~</span> <span class="st">"author_ror_is_predecessor"</span>,</span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA_character_</span></span>
@@ -444,14 +444,16 @@ $ relationships            &lt;chr&gt; "related: https://ror.org/01226dv09", "re
 # ℹ abbreviated name: ¹​institution_display_name</code></pre>
 </div>
 </div>
-<p>These are examples of paying institutions and author affiliations where a match could only be established through relationships recorded in the ROR record. The first ten entries show that this is the case for several universities and their university hospitals, because even though these are related institutions they often have separate ROR IDs. Without using ROR relationships these cases would appear as unmatched.</p>
+<p>These are examples of paying institutions and author affiliations where a match could only be established through relationships recorded in the ROR record. The first ten entries show that this is the case for several universities and their university hospitals, because even though these are related institutions they often have separate ROR IDs. Without using ROR relationships these cases would be unmatched.</p>
 <p>Checking cases where the ROR record doesn’t contain any relationships.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>apc_match <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(match_type),</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">is.na</span>(relationships)) <span class="sc">|&gt;</span> </span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(institution_full_name) <span class="sc">|&gt;</span> </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>apc_match <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(match_type),</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(relationships)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(institution_full_name) <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 38 × 2
    institution_full_name                                        n
@@ -484,37 +486,37 @@ $ relationships            &lt;chr&gt; "related: https://ror.org/01226dv09", "re
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="ot">&lt;-</span> apc_match <span class="sc">|&gt;</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(doi_norm) <span class="sc">|&gt;</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">period       =</span> <span class="fu">first</span>(period),</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_ror    =</span> <span class="fu">first</span>(ror_norm),</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_name   =</span> <span class="fu">first</span>(institution_full_name),</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">publisher    =</span> <span class="fu">first</span>(publisher),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">period =</span> <span class="fu">first</span>(period),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_ror =</span> <span class="fu">first</span>(ror_norm),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_name =</span> <span class="fu">first</span>(institution_full_name),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">publisher =</span> <span class="fu">first</span>(publisher),</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">transformative_agreement =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(agreement)),</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_corr     =</span> <span class="fu">any</span>(is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_any    =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_first  =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"first"</span>),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_corr =</span> <span class="fu">any</span>(is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_any =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_first =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"first"</span>),</span>
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_middle =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"middle"</span>),</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_last   =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"last"</span>),</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_corr   =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_any    =</span> <span class="fu">any</span>(match_exact),</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_first  =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"first"</span>),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_last =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"last"</span>),</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_corr =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type) <span class="sc">&amp;</span> is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_any =</span> <span class="fu">any</span>(match_exact),</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_first =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"first"</span>),</span>
 <span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_middle =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"middle"</span>),</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_last   =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"last"</span>),</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_corr   =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_last =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> author_position <span class="sc">%in%</span> <span class="st">"last"</span>),</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact_corr =</span> <span class="fu">any</span>(match_exact <span class="sc">&amp;</span> is_corresponding <span class="sc">%in%</span> <span class="cn">TRUE</span>),</span>
 <span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">position_category =</span> <span class="fu">case_when</span>(</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>payer_any                             <span class="sc">~</span> <span class="st">"no match"</span>,</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        payer_first <span class="sc">&amp;</span> payer_last <span class="sc">&amp;</span> payer_corr  <span class="sc">~</span> <span class="st">"first + last + corresponding"</span>,</span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>        payer_first <span class="sc">&amp;</span> payer_corr               <span class="sc">~</span> <span class="st">"first + corresponding"</span>,</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>        payer_last  <span class="sc">&amp;</span> payer_corr               <span class="sc">~</span> <span class="st">"last + corresponding"</span>,</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        payer_middle <span class="sc">&amp;</span> payer_corr              <span class="sc">~</span> <span class="st">"middle + corresponding"</span>,</span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        payer_first <span class="sc">&amp;</span> payer_last               <span class="sc">~</span> <span class="st">"first + last"</span>,</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>        payer_corr                             <span class="sc">~</span> <span class="st">"corresponding only"</span>,</span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>        payer_first                            <span class="sc">~</span> <span class="st">"first only"</span>,</span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>        payer_last                             <span class="sc">~</span> <span class="st">"last only"</span>,</span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>        payer_middle                           <span class="sc">~</span> <span class="st">"middle only"</span>,</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span>                                   <span class="sc">~</span> <span class="st">"no position match"</span>   </span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>payer_any <span class="sc">~</span> <span class="st">"no match"</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    payer_first <span class="sc">&amp;</span> payer_last <span class="sc">&amp;</span> payer_corr <span class="sc">~</span> <span class="st">"first + last + corresponding"</span>,</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    payer_first <span class="sc">&amp;</span> payer_corr <span class="sc">~</span> <span class="st">"first + corresponding"</span>,</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    payer_last <span class="sc">&amp;</span> payer_corr <span class="sc">~</span> <span class="st">"last + corresponding"</span>,</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    payer_middle <span class="sc">&amp;</span> payer_corr <span class="sc">~</span> <span class="st">"middle + corresponding"</span>,</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    payer_first <span class="sc">&amp;</span> payer_last <span class="sc">~</span> <span class="st">"first + last"</span>,</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    payer_corr <span class="sc">~</span> <span class="st">"corresponding only"</span>,</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>    payer_first <span class="sc">~</span> <span class="st">"first only"</span>,</span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>    payer_last <span class="sc">~</span> <span class="st">"last only"</span>,</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    payer_middle <span class="sc">~</span> <span class="st">"middle only"</span>,</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"no position match"</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>  ))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(article_level, <span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"article_level.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -525,8 +527,8 @@ $ relationships            &lt;chr&gt; "related: https://ror.org/01226dv09", "re
 <li><code>reason</code>: for the distinct articles that could not be matched to any author affiliation at all, <code>reason</code> shows the number and share attributable to each of the three reasons discussed above (no ROR ID on the affiliation side, no relationships recorded for the payer, or ROR relationships exist but none of them match).</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>only_via_rel_dois <span class="ot">&lt;-</span> article_level <span class="sc">|&gt;</span> </span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(payer_any <span class="sc">&amp;</span> <span class="sc">!</span>exact_any) <span class="sc">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>only_via_rel_dois <span class="ot">&lt;-</span> article_level <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(payer_any <span class="sc">&amp;</span> <span class="sc">!</span>exact_any) <span class="sc">|&gt;</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(doi_norm)</span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>rel_shares <span class="ot">&lt;-</span> apc_match <span class="sc">|&gt;</span></span>
@@ -535,23 +537,25 @@ $ relationships            &lt;chr&gt; "related: https://ror.org/01226dv09", "re
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_articles =</span> <span class="fu">n_distinct</span>(doi_norm), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share_of_articles =</span> n_articles <span class="sc">/</span> <span class="fu">length</span>(only_via_rel_dois))</span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>reason <span class="ot">&lt;-</span> apc_match <span class="sc">|&gt;</span> </span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(doi_norm) <span class="sc">|&gt;</span> </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>reason <span class="ot">&lt;-</span> apc_match <span class="sc">|&gt;</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(doi_norm) <span class="sc">|&gt;</span></span>
 <span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_match           =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_match =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
 <span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_affiliation_ror =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(ror_author)),</span>
 <span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_has_relations =</span> <span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">first</span>(relationships)),</span>
 <span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>any_match) <span class="sc">|&gt;</span>    </span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>any_match) <span class="sc">|&gt;</span></span>
 <span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">reason =</span> <span class="fu">case_when</span>(</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>any_affiliation_ror  <span class="sc">~</span> <span class="st">"no author affiliation has a ROR ID"</span>,</span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>payer_has_relations  <span class="sc">~</span> <span class="st">"payer ROR record has no relationships recorded"</span>,</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span>                  <span class="sc">~</span> <span class="st">"ROR exists, but no direct relationship found"</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span> </span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(reason) <span class="sc">|&gt;</span> </span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share_of_no_match  =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">share_of_all_articles =</span> n <span class="sc">/</span> <span class="fu">n_distinct</span>(apc_match<span class="sc">$</span>doi_norm))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>any_affiliation_ror <span class="sc">~</span> <span class="st">"no author affiliation has a ROR ID"</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>payer_has_relations <span class="sc">~</span> <span class="st">"payer ROR record has no relationships recorded"</span>,</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"ROR exists, but no direct relationship found"</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(reason) <span class="sc">|&gt;</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_of_no_match =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_of_all_articles =</span> n <span class="sc">/</span> <span class="fu">n_distinct</span>(apc_match<span class="sc">$</span>doi_norm)</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(rel_shares, <span class="fu">here</span>(<span class="st">"APC_link_analysis/data"</span>, <span class="st">"rel_shares.csv"</span>))</span>
@@ -649,17 +653,18 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 </div>
 <p>Roughly 92% of articles have at least one author marked as corresponding author in the OpenAlex data. For the other 8%, the policy assumption that APCs are invoiced to the corresponding author’s institution can’t be tested directly with OpenAlex data alone.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(has_corr) <span class="sc">|&gt;</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> has_corr, <span class="at">y =</span> n, <span class="at">fill =</span> has_corr)) <span class="sc">+</span></span>
 <span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.17</span>))) <span class="sc">+</span></span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#051740"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"has corresponding author"</span>, <span class="at">y =</span> <span class="st">"number of articles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.17</span>))) <span class="sc">+</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#051740"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"has corresponding author"</span>, <span class="at">y =</span> <span class="st">"number of articles"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -673,7 +678,7 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(period) <span class="sc">|&gt;</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles        =</span> <span class="fu">n</span>(),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles =</span> <span class="fu">n</span>(),</span>
 <span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_corr_marked =</span> <span class="fu">mean</span>(has_corr),</span>
 <span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -697,13 +702,16 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(period), <span class="at">y =</span> n, <span class="at">fill =</span> has_corr)) <span class="sc">+</span></span>
 <span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">"single"</span>, <span class="at">width =</span> <span class="fl">0.9</span>)) <span class="sc">+</span></span>
 <span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">"single"</span>, <span class="at">width =</span> <span class="fl">0.9</span>),</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.17</span>))) <span class="sc">+</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#051740"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span>),</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"TRUE"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"FALSE"</span>)) <span class="sc">+</span></span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"publication year"</span>, <span class="at">y =</span> <span class="st">"number of articles"</span>, <span class="at">fill =</span> <span class="st">"has </span><span class="sc">\n</span><span class="st">corresponding"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">"single"</span>, <span class="at">width =</span> <span class="fl">0.9</span>),</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.3</span>, <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.17</span>))) <span class="sc">+</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#051740"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span>),</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"TRUE"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"FALSE"</span>)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"publication year"</span>, <span class="at">y =</span> <span class="st">"number of articles"</span>, <span class="at">fill =</span> <span class="st">"has </span><span class="sc">\n</span><span class="st">corresponding"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -742,7 +750,7 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(match_type) <span class="sc">|&gt;</span></span>
 <span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_payer_rors =</span> <span class="fu">n_distinct</span>(ror_norm),</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles   =</span> <span class="fu">n_distinct</span>(doi_norm),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles =</span> <span class="fu">n_distinct</span>(doi_norm),</span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -765,10 +773,10 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles             =</span> <span class="fu">n</span>(),</span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact                  =</span> <span class="fu">sum</span>(exact_any),</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles =</span> <span class="fu">n</span>(),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">exact =</span> <span class="fu">sum</span>(exact_any),</span>
 <span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">only_via_relationships =</span> <span class="fu">sum</span>(payer_any <span class="sc">&amp;</span> <span class="sc">!</span>exact_any),</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">no_match               =</span> <span class="fu">sum</span>(<span class="sc">!</span>payer_any),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">no_match =</span> <span class="fu">sum</span>(<span class="sc">!</span>payer_any),</span>
 <span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
 <span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -787,23 +795,25 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <p>Overall, about 87% of articles can be matched exactly. ROR relationships add about an additional 7% of articles to the analysis set which exact ROR ID matching would have missed, leaving about 6% of articles unmatched.</p>
 <p>Number of distinct articles where the paying institution could <strong>not</strong> be matched to any author affiliation, differentiated by three reasons: 1) no author affiliation of the article has a ROR ID assigned, 2) at least one author affiliation has a ROR ID, but the ROR record of the paying institution doesn’t record any relationships at all, and 3) the paying institution’s ROR record does record relationships, but none of them matches any author affiliation of the article. The third reason could either be due to the institutions genuinely not being related, or to how ROR itself organizes relationships. For example, the University of Tübingen is a related organization of the University Hospital of Tübingen, and the University Children’s Hospital Tübingen is a child organization of the University Hospital of Tübingen, but there is no direct relationship recorded in ROR between the University of Tübingen and the University Children’s Hospital Tübingen.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>apc_match <span class="sc">|&gt;</span> </span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(doi_norm) <span class="sc">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>apc_match <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(doi_norm) <span class="sc">|&gt;</span></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_match           =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_match =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(match_type)),</span>
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">any_affiliation_ror =</span> <span class="fu">any</span>(<span class="sc">!</span><span class="fu">is.na</span>(ror_author)),</span>
 <span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_has_relations =</span> <span class="sc">!</span><span class="fu">is.na</span>(<span class="fu">first</span>(relationships)),</span>
 <span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>any_match) <span class="sc">|&gt;</span>    </span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>any_match) <span class="sc">|&gt;</span></span>
 <span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">reason =</span> <span class="fu">case_when</span>(</span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>any_affiliation_ror  <span class="sc">~</span> <span class="st">"no author affiliation has a ROR ID"</span>,</span>
-<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>payer_has_relations  <span class="sc">~</span> <span class="st">"payer ROR record has no relationships recorded"</span>,</span>
-<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span>                  <span class="sc">~</span> <span class="st">"ROR exists, but no direct relationship found"</span></span>
-<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span> </span>
-<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(reason) <span class="sc">|&gt;</span> </span>
-<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share_of_no_match  =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
-<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">share_of_all_articles =</span> n <span class="sc">/</span> <span class="fu">n_distinct</span>(apc_match<span class="sc">$</span>doi_norm))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>any_affiliation_ror <span class="sc">~</span> <span class="st">"no author affiliation has a ROR ID"</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>payer_has_relations <span class="sc">~</span> <span class="st">"payer ROR record has no relationships recorded"</span>,</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"ROR exists, but no direct relationship found"</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(reason) <span class="sc">|&gt;</span></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_of_no_match =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n),</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">share_of_all_articles =</span> n <span class="sc">/</span> <span class="fu">n_distinct</span>(apc_match<span class="sc">$</span>doi_norm)</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 4
   reason                               n share_of_no_match share_of_all_articles
@@ -820,8 +830,8 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 <p>For each article we want to know if the paying institution appears as affiliation of the first, the last, a middle and/or the corresponding author.</p>
 <p>The code below shows, separately for articles with and without marked corresponding authors, the share of articles where the paying institution appears as the affiliation of at least one author at each position. Note: position categories are not mutually exclusive, i.e.&nbsp;authors can have a certain position and be marked as corresponding authors at the same time, or several co-authors can be affiliated with the paying institution so that the paying institution appears at different author positions for the same article.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span> </span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(has_corr) <span class="sc">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(has_corr) <span class="sc">|&gt;</span></span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles      =</span> <span class="fu">n</span>(),</span>
 <span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_at_first  =</span> <span class="fu">mean</span>(payer_first),</span>
@@ -865,138 +875,171 @@ Distinct paying institutions with a ROR match (exact or via relationships):     
 </div>
 </div>
 <p>The figure below visualizes this distribution, split by whether a corresponding author is marked, with position categories ordered by their maximum share across the two groups.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span> </span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(has_corr, position_category) <span class="sc">|&gt;</span> </span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(has_corr) <span class="sc">|&gt;</span> </span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span> </span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> share, <span class="at">y =</span> <span class="fu">fct_reorder</span>(position_category, share, <span class="at">.fun =</span> max), <span class="at">fill =</span> has_corr)) <span class="sc">+</span></span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">"single"</span>, <span class="at">width =</span> <span class="fl">0.9</span>)) <span class="sc">+</span></span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">preserve =</span> <span class="st">"single"</span>, <span class="at">width =</span> <span class="fl">0.9</span>),</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(</span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"TRUE"</span>    <span class="ot">=</span> <span class="st">"#051740"</span>,</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span></span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">+</span></span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"share of articles"</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">"has corresponding"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(has_corr, position_category) <span class="sc">|&gt;</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(has_corr) <span class="sc">|&gt;</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">has_corr =</span> <span class="fu">factor</span>(has_corr, <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> share, <span class="at">y =</span> <span class="fu">fct_reorder</span>(position_category, share, <span class="at">.fun =</span> max), <span class="at">fill =</span> has_corr)) <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">vars</span>(has_corr),</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">labeller =</span> <span class="fu">as_labeller</span>(<span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"has corresponding-author data"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"has no corresponding-author data"</span>))</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="fl">5.5</span></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>))) <span class="sc">+</span></span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#051740"</span>, <span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#4086e0"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#cbd8e8"</span>), <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"share of articles"</span>, <span class="at">y =</span> <span class="cn">NULL</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="computational_notebook_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="computational_notebook_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1440"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>For articles with marked corresponding authors, the single largest category is <code>first + last + corresponding</code>, meaning the paying institution is simultaneously affiliated with the first author, the last author, and the corresponding author. Combined with the smaller categories that also include <em>corresponding</em> (<code>first + corresponding</code>, <code>last + corresponding</code>, <code>middle + corresponding</code>), the paying institution is identified via the corresponding author in the large majority of these articles.</p>
 </section>
-<section id="are-first-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" class="level3">
-<h3 class="anchored" data-anchor-id="are-first-author-affiliations-a-good-proxy-for-identifying-the-paying-institution">Are first author affiliations a good proxy for identifying the paying institution?</h3>
-<p>We are especially interested in how often the paying institution as first author affiliation and the paying institution as corresponding author affiliation coincide and what might is missed, if one identifies the paying institution through corresponding-author data.</p>
-<p>The code below summarizes, across all articles (not only those with marked corresponding authors), how often the paying institution appears at the corresponding author versus at the first author.</p>
+<section id="are-first-andor-last-author-affiliations-a-good-proxy-for-identifying-the-paying-institution" class="level3">
+<h3 class="anchored" data-anchor-id="are-first-andor-last-author-affiliations-a-good-proxy-for-identifying-the-paying-institution">Are first and/or last author affiliations a good proxy for identifying the paying institution?</h3>
+<p>We are especially interested in how often the paying institution as first and/or last author affiliation and the paying institution as corresponding author affiliation coincide and what might is missed, if the paying institution is only identified through corresponding-author data.</p>
+<p>The code below summarizes, across all articles (not only those with marked corresponding authors), how often the paying institution appears at the corresponding author versus at the first and last author.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span> </span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
 <span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_articles =</span> <span class="fu">n</span>(),</span>
 <span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_payer_at_corresponding =</span> <span class="fu">sum</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>     <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
 <span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    )),</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>   <span class="at">payer_at_corresponding =</span> <span class="fu">mean</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>     <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_at_corresponding =</span> <span class="fu">mean</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
 <span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    )),</span>
 <span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_payer_at_first =</span> <span class="fu">sum</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
 <span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>    )),</span>
 <span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_at_first =</span> <span class="fu">mean</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>     <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
-<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>    ))</span>
-<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>  ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_payer_at_last =</span> <span class="fu">sum</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"last + corresponding"</span>,</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"last only"</span></span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>    )),</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">payer_at_last =</span> <span class="fu">mean</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"last + corresponding"</span>,</span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"last only"</span></span>
+<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
+<pre><code># A tibble: 1 × 7
   n_articles n_payer_at_corresponding payer_at_corresponding n_payer_at_first
        &lt;int&gt;                    &lt;int&gt;                  &lt;dbl&gt;            &lt;int&gt;
 1     112345                    95799                  0.853            94907
-# ℹ 1 more variable: payer_at_first &lt;dbl&gt;</code></pre>
+# ℹ 3 more variables: payer_at_first &lt;dbl&gt;, n_payer_at_last &lt;int&gt;,
+#   payer_at_last &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p>Across the full analysis set, the paying institution appears at the first author for a similar share of articles as it appears at the corresponding author, even though corresponding authors are only marked 92% of articles. This might suggest that first-author affiliation performs comparably to corresponding-author affiliation as an identification strategy.</p>
-<p>Restricting to articles with marked corresponding authors where the paying institution was matched to at least one author at all, the code below checks whether the paying institution matches the first author against whether it matches the corresponding author.</p>
+<p>Across the full analysis set, the paying institution appears at the first author for a similar share of articles as it appears at the corresponding author, even though corresponding authors are only marked for 92% of articles. This might suggest that first-author affiliation performs comparably to corresponding-author affiliation as an identification strategy. Last author affiliation identifies the paying institution in about 12% less cases than first author affiliation.</p>
+<p>Restricting to articles with marked corresponding authors where the paying institution was matched to at least one author at all, the code below checks whether the paying institution matches the first or last author against whether it matches the corresponding author.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(has_corr, payer_any) <span class="sc">|&gt;</span></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(payer_first, payer_corr) <span class="sc">|&gt;</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(payer_first, payer_last, payer_corr) <span class="sc">|&gt;</span></span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 4
-  payer_first payer_corr     n   share
-  &lt;lgl&gt;       &lt;lgl&gt;      &lt;int&gt;   &lt;dbl&gt;
-1 FALSE       FALSE       1300 0.0133 
-2 FALSE       TRUE        8217 0.0843 
-3 TRUE        FALSE        397 0.00407
-4 TRUE        TRUE       87582 0.898  </code></pre>
+<pre><code># A tibble: 8 × 5
+  payer_first payer_last payer_corr     n   share
+  &lt;lgl&gt;       &lt;lgl&gt;      &lt;lgl&gt;      &lt;int&gt;   &lt;dbl&gt;
+1 FALSE       FALSE      FALSE        740 0.00759
+2 FALSE       FALSE      TRUE        2178 0.0223 
+3 FALSE       TRUE       FALSE        560 0.00574
+4 FALSE       TRUE       TRUE        6039 0.0619 
+5 TRUE        FALSE      FALSE        292 0.00299
+6 TRUE        FALSE      TRUE       19003 0.195  
+7 TRUE        TRUE       FALSE        105 0.00108
+8 TRUE        TRUE       TRUE       68579 0.703  </code></pre>
 </div>
 </div>
-<p>First and corresponding author agree in the majority of cases. Articles where the corresponding author matches but the first author does not are the cases a first-author proxy would miss. These cases make up for about 8%.</p>
+<p>First, last and corresponding author agree in the majority of cases. Articles where the corresponding author matches but the first author does not are the cases a first-author proxy would miss. These cases make up for about 8%. Articles where the corresponding author matches but the last author does not are the cases a last-author proxy would miss. These cases make up for about 21%.</p>
 <p>The following checks how much a first-author fallback adds across all articles, i.e.&nbsp;how many additional articles would be captured through the first author affiliation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">corresponding            =</span> <span class="fu">sum</span>(payer_corr),</span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">first_additional         =</span> <span class="fu">sum</span>(payer_first <span class="sc">&amp;</span> <span class="sc">!</span>payer_corr),</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">union_corr_or_first      =</span> <span class="fu">sum</span>(payer_corr <span class="sc">|</span> payer_first),</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gain_pct =</span> first_additional <span class="sc">/</span> corresponding</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">corresponding =</span> <span class="fu">sum</span>(payer_corr),</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">first_additional =</span> <span class="fu">sum</span>(payer_first <span class="sc">&amp;</span> <span class="sc">!</span>payer_corr),</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">union_corr_first =</span> <span class="fu">sum</span>(payer_corr <span class="sc">|</span> payer_first),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gain_pct =</span> first_additional <span class="sc">/</span> union_corr_first</span>
 <span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
-  corresponding first_additional union_corr_or_first gain_pct
-          &lt;int&gt;            &lt;int&gt;               &lt;int&gt;    &lt;dbl&gt;
-1         95799             7325              103124   0.0765</code></pre>
+  corresponding first_additional union_corr_first gain_pct
+          &lt;int&gt;            &lt;int&gt;            &lt;int&gt;    &lt;dbl&gt;
+1         95799             7325           103124   0.0710</code></pre>
 </div>
 </div>
-<p>Using first-author affiliation as an additional fallback increases the number of identified articles by about 7.6%. This is particularly relevant for the 8% of articles with no marked corresponding authors, where first-author affiliation is an available signal.</p>
-<p>The Venn diagram below visualizes the overlap between articles where the paying institution matches the corresponding author and articles where it matches the first author, across the full analysis set.</p>
+<p>Using first-author affiliation as an additional fallback increases the number of identified articles by about 7.1%. This is particularly relevant for the 8% of articles with no marked corresponding authors, where first-author affiliation is an available signal.</p>
+<p>We also check how many additional articles would be captured through the last-author affiliation.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>venn_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Corresponding"</span> <span class="ot">=</span> article_level <span class="sc">|&gt;</span> </span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">|&gt;</span> </span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(doi_norm),</span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"First"</span> <span class="ot">=</span> article_level <span class="sc">|&gt;</span> </span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
-<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
-<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">|&gt;</span> </span>
-<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(doi_norm)</span>
-<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>article_level <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">corresponding       =</span> <span class="fu">sum</span>(payer_corr),</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">last_additional     =</span> <span class="fu">sum</span>(payer_last <span class="sc">&amp;</span> <span class="sc">!</span>payer_corr),</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">union_corr_last     =</span> <span class="fu">sum</span>(payer_corr <span class="sc">|</span> payer_last),</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gain_pct            =</span> last_additional <span class="sc">/</span> union_corr_last</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  corresponding last_additional union_corr_last gain_pct
+          &lt;int&gt;           &lt;int&gt;           &lt;int&gt;    &lt;dbl&gt;
+1         95799            7064          102863   0.0687</code></pre>
 </div>
+</div>
+<p>Using last-author affiliation as an additional fallback increases the number of identified articles by about 6.8%, which is a little less than with first-author affiliation.</p>
+<p>The Venn diagram below visualizes the overlap between articles where the paying institution matches the corresponding author, articles where it matches the first author, and articles where it matches the last author across the full analysis set.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggVennDiagram</span>(venn_list, <span class="at">label =</span> <span class="st">"both"</span>, <span class="at">set_size =</span> <span class="dv">4</span>, <span class="at">label_size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#cbd8e8"</span>, <span class="at">high =</span> <span class="st">"#051740"</span>) <span class="sc">+</span></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="fl">0.75</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Coordinate system already present.
-ℹ Adding new coordinate system, which will replace the existing one.</code></pre>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>venn_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Corresponding"</span> <span class="ot">=</span> article_level <span class="sc">|&gt;</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"last + corresponding"</span>, <span class="st">"middle + corresponding"</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">|&gt;</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(doi_norm),</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"First"</span> <span class="ot">=</span> article_level <span class="sc">|&gt;</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"first + corresponding"</span>,</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"first only"</span></span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">|&gt;</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(doi_norm),</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Last"</span> <span class="ot">=</span> article_level <span class="sc">|&gt;</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(position_category <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last + corresponding"</span>, <span class="st">"last + corresponding"</span>,</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"first + last"</span>, <span class="st">"last only"</span></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">|&gt;</span></span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(doi_norm)</span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggVennDiagram</span>(venn_list, <span class="at">label =</span> <span class="st">"both"</span>, <span class="at">set_size =</span> <span class="dv">8</span>, <span class="at">label_size =</span> <span class="dv">8</span>) <span class="sc">+</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"#cbd8e8"</span>, <span class="at">high =</span> <span class="st">"#051740"</span>) <span class="sc">+</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
-<div>
+<div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="computational_notebook_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="computational_notebook_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1920"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The two sets overlap substantially, confirming that first- and corresponding-author affiliation largely identify the same articles. The area unique to “First” represents the practical gain from using first author as a fallback proxy, while the area unique to “Corresponding” represents articles a first-author-only strategy would miss.</p>
+<p>The three sets overlap substantially, confirming that first-, last-, and corresponding-author affiliation largely identify the same articles. The areas unique to “First” and/or “Last” represent the practical gain from using first and/or last author as a fallback proxy, while the area unique to “Corresponding” represents articles a first-author-only or last-author-only strategies would miss. However, the combination of “First” and “Last” shows a larger additional gain than the area unique to “Corresponding”.</p>
 
 </section>
 </section>
@@ -1016,9 +1059,6 @@ Research Organization Registry. (2026). <em>ROR data</em>. Zenodo. <a href="http
 </div>
 <div id="ref-Schimmer2015" class="csl-entry" role="listitem">
 Schimmer, R., Geschuhn, K. K., &amp; Vogler, A. (2015). <em>Disrupting the subscription journals’ business model for the necessary large-scale transformation to open access</em>. <a href="https://doi.org/10.17617/1.3">https://doi.org/10.17617/1.3</a>
-</div>
-<div id="ref-SUB" class="csl-entry" role="listitem">
-<em><span>Open Scholarly Data @ SUB Göttingen - Overview</span></em>. (n.d.). Retrieved October 6, 2026, from <a href="https://subugoe.github.io/scholcomm_analytics/data.html">https://subugoe.github.io/scholcomm_analytics/data.html</a>
 </div>
 </div></section></div></main>
 <!-- /main column -->
