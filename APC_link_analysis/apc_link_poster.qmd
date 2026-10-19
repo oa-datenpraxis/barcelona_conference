@@ -113,7 +113,7 @@ reason <- read_csv(here("APC_link_analysis/data", "reason.csv"))
 
 # Background
 
-Open access publication fees ("APC") are often invoiced to the institution of the corresponding author. However, corresponding-author data is often unavailable as open research information. Some studies therefore used first author affiliation data as a proxy. This poster tests the policy assumption against payment data collected by the OpenAPC initiative,
+Open access publication fees ("APCs") are often invoiced to the institution of the corresponding author. However, corresponding-author data is often unavailable as open research information. Some studies therefore used first author affiliation data as a proxy. This poster tests the policy assumption against payment data collected by the OpenAPC initiative.
 
 # Data
 
@@ -191,7 +191,7 @@ article_level |>
 
 ::::
 
-Coverage is high and also proves stable across 2021–2024, but drops in 2025. This might be due to a lag
+Coverage is high and also proves stable across 2021--2024, but drops in 2025. This might be due to a lag
 in OpenAPC data submission and enrichment rather than a change in coverage in OpenAlex.
 
 # How well does ROR-based matching work?
@@ -450,7 +450,7 @@ ggVennDiagram(venn_list, label = "both", set_size = 8, label_size = 8) +
 
 # Conclusion
 
-- **Coverage:** OpenAlex provides corresponding-author data for the large majority of articles.
+- **Coverage:** OpenAlex provides corresponding-author data for the large majority of articles. A comparison with OpenAPC could be a useful approach to verify the accuracy of this data.
 - **Matching:** ROR-based matching identifies the paying institution for most articles, ROR relationships extend exact ID matching.
 - **Author position:** The paying institution is most often affiliated with the first, last, *and* corresponding author.
 - **First/last author as proxy:** First- and last-author affiliations together can serve as a proxy or an additional filter.
