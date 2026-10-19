@@ -113,7 +113,7 @@ reason <- read_csv(here("APC_link_analysis/data", "reason.csv"))
 
 # Background
 
-For paid open access, the dominant model is that article processing charges (APCs) are invoiced to the institution of the corresponding author. However, corresponding-author data has often been unavailable as open research information. Some studies therefore used first author affiliation data as a proxy. This poster tests the policy assumption against real payment data. 
+Open access publication fees ("APC") are often invoiced to the institution of the corresponding author. However, corresponding-author data is often unavailable as open research information. Some studies therefore used first author affiliation data as a proxy. This poster tests the policy assumption against payment data collected by the OpenAPC initiative,
 
 # Data
 
@@ -121,7 +121,7 @@ For paid open access, the dominant model is that article processing charges (APC
 
 # How complete is the coverage of OpenAlex corresponding-author data?
 
-Corresponding-author data in OpenAlex is the basis for testing the policy assumption that APCs are invoiced to that author's institution. We computed the share of corresponding-author data for the entire dataset and broken down by publication year.
+OpenAlex is the basis for testing the policy assumption that APCs are invoiced to the correponding author's institution. We determined the share of corresponding-author data for the entire dataset by publication year.
 
 :::: {layout-ncol="2"}
 
@@ -191,7 +191,7 @@ article_level |>
 
 ::::
 
-Coverage is high in general and also proves stable across 2021–2024, but drops in 2025. This might be due to a lag
+Coverage is high and also proves stable across 2021–2024, but drops in 2025. This might be due to a lag
 in OpenAPC data submission and enrichment rather than a change in coverage in OpenAlex.
 
 # How well does ROR-based matching work?
