@@ -20,6 +20,7 @@ The poster and its figures are licensed under the
 - **No additional restrictions:** You may not apply legal terms or technological measures that legally restrict others from doing anything the licence permits.
 
 Full licence text: <https://creativecommons.org/licenses/by/4.0/legalcode>
+
 Human-readable summary: <https://creativecommons.org/licenses/by/4.0/>
 
 **Not covered:** Data from third-party sources (OpenAlex, OpenAPC, ROR) and other third-party files remain under their original licences. See the "Licence" section in the [README](README.md).
