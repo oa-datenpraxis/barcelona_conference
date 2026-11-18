@@ -1,5 +1,12 @@
 # APC link analysis: Poster Submission to the 2026 Conference of the Barcelona Declaration on Open Research Information
 
+<!-- badges: start -->
+
+[![License: CC BY 4.0 (Poster)](https://img.shields.io/badge/Poster-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![License: CC0 1.0 (Notebook and Code)](https://img.shields.io/badge/Notebook_and_Code-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+<!-- badges: end -->
+
 This repository contains the materials for our submission to the **2026 Conference of the Barcelona Declaration on Open Research Information**. It includes the poster, the accompanying computational notebook, and the data and code used for the underlying analysis.
 
 ## Repository Structure
