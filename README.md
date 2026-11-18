@@ -58,4 +58,4 @@ Some files in this repository were not created by the authors and are **not** co
 
 ## Contact
 
-[info.oa-datenpraxis@listserv.dfn.de](mailto:info.oa-datenpraxis@listserv.dfn.de)
+Sophia Dörner: [sophia.doerner@sub.uni-goettingen.de](mailto:sophia.doerner@sub.uni-goettingen.de)
